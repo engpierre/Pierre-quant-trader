@@ -1,0 +1,905 @@
+[
+    {
+        "symbol": "XOM",
+        "price": 159.67,
+        "sma_200": 119.7,
+        "avg_vol_20d": 21803963.0,
+        "market_cap": 665307119616,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for XOM exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 67.95,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Accumulation",
+            "pivot_point": 157.52,
+            "support_1": 155.48,
+            "resistance_1": 160.2,
+            "order_block_high": 144.05,
+            "order_block_low": 137.39,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$XOM**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `67.95`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "XOM structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 90,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "C",
+        "price": 109.52,
+        "sma_200": 100.75,
+        "avg_vol_20d": 16545596.0,
+        "market_cap": 191585419264,
+        "sector": "Financials",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for C exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 47.74,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Accumulation",
+            "pivot_point": 109.09,
+            "support_1": 107.59,
+            "resistance_1": 111.34,
+            "order_block_high": 113.18,
+            "order_block_low": 108.66,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$C**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `47.74`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "C structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 90,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "CVX",
+        "price": 201.73,
+        "sma_200": 156.89,
+        "avg_vol_20d": 14114142.0,
+        "market_cap": 403329581056,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for CVX exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 76.86,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 200.96,
+            "support_1": 199.48,
+            "resistance_1": 202.92,
+            "order_block_high": 205.07,
+            "order_block_low": 201.0,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$CVX**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `76.86`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "CVX structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 90,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "COP",
+        "price": 126.92,
+        "sma_200": 95.28,
+        "avg_vol_20d": 11574217.0,
+        "market_cap": 155139293184,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for COP exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 75.59,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 125.45,
+            "support_1": 124.54,
+            "resistance_1": 126.92,
+            "order_block_high": 128.13,
+            "order_block_low": 126.11,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$COP**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `75.59`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "COP structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 90,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "CTRA",
+        "price": 33.97,
+        "sma_200": 25.71,
+        "avg_vol_20d": 10887318.0,
+        "market_cap": 25792495616,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for CTRA exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 72.82,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 34.04,
+            "support_1": 33.42,
+            "resistance_1": 34.53,
+            "order_block_high": 30.42,
+            "order_block_low": 29.13,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$CTRA**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `72.82`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "CTRA structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 90,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "SLB",
+        "price": 46.63,
+        "sma_200": 38.41,
+        "avg_vol_20d": 17441446.0,
+        "market_cap": 69997846528,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for SLB exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 45.88,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Distribution",
+            "pivot_point": 46.8,
+            "support_1": 45.72,
+            "resistance_1": 48.9,
+            "order_block_high": 44.9,
+            "order_block_low": 42.27,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$SLB**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `45.88`. Structural Order Block analysis signifies an institutional `Distribution` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "SLB structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 75,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 0,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "KMI",
+        "price": 32.84,
+        "sma_200": 27.84,
+        "avg_vol_20d": 13081604.0,
+        "market_cap": 73062645760,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for KMI exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 53.3,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Distribution",
+            "pivot_point": 33.22,
+            "support_1": 32.72,
+            "resistance_1": 33.94,
+            "order_block_high": 29.89,
+            "order_block_low": 28.65,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$KMI**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `53.3`. Structural Order Block analysis signifies an institutional `Distribution` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "KMI structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 75,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 0,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "BKR",
+        "price": 60.35,
+        "sma_200": 47.89,
+        "avg_vol_20d": 11152747.0,
+        "market_cap": 59640070144,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": true,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for BKR exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 54.6,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Distribution",
+            "pivot_point": 59.33,
+            "support_1": 57.9,
+            "resistance_1": 62.15,
+            "order_block_high": 61.29,
+            "order_block_low": 59.9,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$BKR**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `54.6`. Structural Order Block analysis signifies an institutional `Distribution` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "BKR structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 75,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Identified as a high-velocity 'Runner' (+20%)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 35,
+                "Insider": 10,
+                "Mechanics": 0,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "VG",
+        "price": 15.81,
+        "sma_200": 11.36,
+        "avg_vol_20d": 31538012.0,
+        "market_cap": 38844698624,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for VG exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 73.73,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 14.98,
+            "support_1": 13.14,
+            "resistance_1": 16.12,
+            "order_block_high": 16.81,
+            "order_block_low": 13.83,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$VG**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `73.73`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "VG structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 70,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "OXY",
+        "price": 60.71,
+        "sma_200": 44.43,
+        "avg_vol_20d": 20257901.0,
+        "market_cap": 59876245504,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for OXY exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 76.07,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 59.72,
+            "support_1": 58.72,
+            "resistance_1": 60.59,
+            "order_block_high": 59.15,
+            "order_block_low": 56.42,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$OXY**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `76.07`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "OXY structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 70,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "DVN",
+        "price": 48.66,
+        "sma_200": 35.94,
+        "avg_vol_20d": 17678512.0,
+        "market_cap": 30182062080,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for DVN exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 73.13,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 48.97,
+            "support_1": 48.1,
+            "resistance_1": 49.65,
+            "order_block_high": 49.67,
+            "order_block_low": 48.42,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$DVN**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `73.13`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "DVN structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 70,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "HAL",
+        "price": 36.53,
+        "sma_200": 26.39,
+        "avg_vol_20d": 16070671.0,
+        "market_cap": 30744619008,
+        "sector": "Energy",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for HAL exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 60.11,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Accumulation",
+            "pivot_point": 36.66,
+            "support_1": 36.05,
+            "resistance_1": 37.54,
+            "order_block_high": 32.87,
+            "order_block_low": 31.04,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$HAL**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `60.11`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "HAL structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 70,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "PL",
+        "price": 33.83,
+        "sma_200": 14.24,
+        "avg_vol_20d": 13312689.0,
+        "market_cap": 11539076096,
+        "sector": "Industrials",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for PL exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 71.24,
+            "rsi_condition": "Overbought Pivot",
+            "obv_trend": "Accumulation",
+            "pivot_point": 26.05,
+            "support_1": 24.85,
+            "resistance_1": 28.17,
+            "order_block_high": 36.28,
+            "order_block_low": 32.26,
+            "order_block_status": "Trapped Horizontally Inside Volatility Order Block",
+            "narrative": "**Empirical Quant Assessment for **$PL**:**\nThe asset is currently exhibiting a `Overbought Pivot` condition with an anchored mathematical RSI at `71.24`. Structural Order Block analysis signifies an institutional `Accumulation` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trapped Horizontally Inside Volatility Order Block`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "PL structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 70,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "OBV Structure: +15% (Institutional Accumulation)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 15,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "IBRX",
+        "price": 8.47,
+        "sma_200": 3.63,
+        "avg_vol_20d": 34576132.0,
+        "market_cap": 8708104192,
+        "sector": "Healthcare",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for IBRX exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 52.87,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Distribution",
+            "pivot_point": 8.68,
+            "support_1": 8.49,
+            "resistance_1": 9.01,
+            "order_block_high": 7.98,
+            "order_block_low": 6.08,
+            "order_block_status": "Trading Above Order Block (Support Maintained)",
+            "narrative": "**Empirical Quant Assessment for **$IBRX**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `52.87`. Structural Order Block analysis signifies an institutional `Distribution` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Above Order Block (Support Maintained)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "IBRX structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 55,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 0,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    },
+    {
+        "symbol": "KEY",
+        "price": 19.41,
+        "sma_200": 18.7,
+        "avg_vol_20d": 18215793.0,
+        "market_cap": 21150058496,
+        "sector": "Financials",
+        "sentiment": {
+            "hype_score": 65,
+            "exhaustion_risk": false,
+            "runner_potential": false,
+            "narrative": "**Overall Sentiment Synopsis & Forward Look**\nBaseline sentiment for KEY exhibits stable momentum without extreme deviation. Social chatter remains balanced.\n\n**Key Future-Affecting Sentiment Drivers**\nMacro sector rotation and upcoming cyclical earnings represent the primary narrative catalysts.\n\n**Sentiment Momentum & Switch Detection**\nNo severe retail exhaustion detected. Trend remains relatively neutral-to-bullish.\n\n**Concise Recommendation (Sentiment-Derived)**\nHold/Accumulate on structural support.\n\n**Concise Reasoning**\nLack of aggressive social euphoria combined with steady news flow implies sustainable low-volatility accumulation phase."
+        },
+        "insider_audit": {
+            "60d_net_buy_usd": 0.0,
+            "60d_net_sell_usd": 0.0,
+            "60d_unscheduled_sell_usd": 0.0,
+            "60d_scheduled_sell_usd": 0.0,
+            "60d_tax_sell_usd": 0.0,
+            "weighted_net_sell_usd": 0.0,
+            "ceo_cfo_buy": false,
+            "massive_selling_detected": false,
+            "divergence_flag": false,
+            "red_flag": false,
+            "audit_bonus": 0
+        },
+        "technical_audit": {
+            "rsi_14": 38.86,
+            "rsi_condition": "Neutral Structure",
+            "obv_trend": "Distribution",
+            "pivot_point": 19.14,
+            "support_1": 18.87,
+            "resistance_1": 19.55,
+            "order_block_high": 22.4,
+            "order_block_low": 21.29,
+            "order_block_status": "Trading Below Order Block (Resistance Rejected)",
+            "narrative": "**Empirical Quant Assessment for **$KEY**:**\nThe asset is currently exhibiting a `Neutral Structure` condition with an anchored mathematical RSI at `38.86`. Structural Order Block analysis signifies an institutional `Distribution` footprint across trailing standard deviations. Current price alignment confirms asset is intrinsically `Trading Below Order Block (Resistance Rejected)`."
+        },
+        "intelligence_audit": {
+            "aiq_conviction_modifier": 15,
+            "rag_context_summary": "KEY structural review: Recent SEC filings and global news streams indicate resilient unstructured momentum and healthy fundamental positioning relative to macroeconomic KDB-X sector trends."
+        },
+        "verification_audit": {
+            "validity_score": 55,
+            "reasoning": [
+                "Scout Protocol: +15% (Baseline Liquidity & 200-MA Structure Met)",
+                "[+] Sentiment: Favorable retail engagement allocation relative to technical base (+15%)",
+                "AI-Q Fundament (NVIDIA RAG Bridge): +15% (Strong Context)",
+                "[~] Insider Baseline: +10% (Neutral stance. No critical executive dumping detected)"
+            ],
+            "breakdown": {
+                "Scout": 15,
+                "Sentiment": 15,
+                "Insider": 10,
+                "Mechanics": 0,
+                "NVIDIA AI-Q": 15
+            }
+        }
+    }
+]

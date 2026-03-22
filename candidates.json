@@ -1,0 +1,362 @@
+[
+    {
+        "symbol": "IBRX",
+        "price": 8.47,
+        "sma_200": 3.63,
+        "avg_vol_20d": 34576132.0,
+        "market_cap": 8708104192,
+        "sector": "Healthcare"
+    },
+    {
+        "symbol": "VG",
+        "price": 15.81,
+        "sma_200": 11.36,
+        "avg_vol_20d": 31538012.0,
+        "market_cap": 38844698624,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "XOM",
+        "price": 159.67,
+        "sma_200": 119.7,
+        "avg_vol_20d": 21803963.0,
+        "market_cap": 665307119616,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "OXY",
+        "price": 60.71,
+        "sma_200": 44.43,
+        "avg_vol_20d": 20257901.0,
+        "market_cap": 59876245504,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "KEY",
+        "price": 19.41,
+        "sma_200": 18.7,
+        "avg_vol_20d": 18215793.0,
+        "market_cap": 21150058496,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "DVN",
+        "price": 48.66,
+        "sma_200": 35.94,
+        "avg_vol_20d": 17678512.0,
+        "market_cap": 30182062080,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "SLB",
+        "price": 46.63,
+        "sma_200": 38.41,
+        "avg_vol_20d": 17441446.0,
+        "market_cap": 69997846528,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "C",
+        "price": 109.52,
+        "sma_200": 100.75,
+        "avg_vol_20d": 16545596.0,
+        "market_cap": 191585419264,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "HAL",
+        "price": 36.53,
+        "sma_200": 26.39,
+        "avg_vol_20d": 16070671.0,
+        "market_cap": 30744619008,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "CVX",
+        "price": 201.73,
+        "sma_200": 156.89,
+        "avg_vol_20d": 14114142.0,
+        "market_cap": 403329581056,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "PL",
+        "price": 33.83,
+        "sma_200": 14.24,
+        "avg_vol_20d": 13312689.0,
+        "market_cap": 11539076096,
+        "sector": "Industrials"
+    },
+    {
+        "symbol": "KMI",
+        "price": 32.84,
+        "sma_200": 27.84,
+        "avg_vol_20d": 13081604.0,
+        "market_cap": 73062645760,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "COP",
+        "price": 126.92,
+        "sma_200": 95.28,
+        "avg_vol_20d": 11574217.0,
+        "market_cap": 155139293184,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "BKR",
+        "price": 60.35,
+        "sma_200": 47.89,
+        "avg_vol_20d": 11152747.0,
+        "market_cap": 59640070144,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "CTRA",
+        "price": 33.97,
+        "sma_200": 25.71,
+        "avg_vol_20d": 10887318.0,
+        "market_cap": 25792495616,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "USB",
+        "price": 51.25,
+        "sma_200": 49.24,
+        "avg_vol_20d": 10870483.0,
+        "market_cap": 79626903552,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "APA",
+        "price": 39.11,
+        "sma_200": 23.64,
+        "avg_vol_20d": 9553451.0,
+        "market_cap": 13815665664,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "EQT",
+        "price": 64.67,
+        "sma_200": 55.36,
+        "avg_vol_20d": 8946141.0,
+        "market_cap": 40371798016,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "MS",
+        "price": 161.47,
+        "sma_200": 158.38,
+        "avg_vol_20d": 7533652.0,
+        "market_cap": 256391790592,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "EOG",
+        "price": 138.73,
+        "sma_200": 113.74,
+        "avg_vol_20d": 6410310.0,
+        "market_cap": 75274682368,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "WMB",
+        "price": 72.41,
+        "sma_200": 61.17,
+        "avg_vol_20d": 6401115.0,
+        "market_cap": 88453390336,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "OKE",
+        "price": 89.21,
+        "sma_200": 74.77,
+        "avg_vol_20d": 5776654.0,
+        "market_cap": 56182996992,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "CFG",
+        "price": 57.02,
+        "sma_200": 52.99,
+        "avg_vol_20d": 5525984.0,
+        "market_cap": 24489304064,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "KTOS",
+        "price": 84.62,
+        "sma_200": 77.08,
+        "avg_vol_20d": 5161725.0,
+        "market_cap": 15803439104,
+        "sector": "Industrials"
+    },
+    {
+        "symbol": "IVZ",
+        "price": 23.21,
+        "sma_200": 22.64,
+        "avg_vol_20d": 4984105.0,
+        "market_cap": 10297668608,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "VLO",
+        "price": 239.86,
+        "sma_200": 166.74,
+        "avg_vol_20d": 4643481.0,
+        "market_cap": 73159589888,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "EXE",
+        "price": 107.32,
+        "sma_200": 105.64,
+        "avg_vol_20d": 4096717.0,
+        "market_cap": 25799540736,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "FANG",
+        "price": 192.54,
+        "sma_200": 149.01,
+        "avg_vol_20d": 4057694.0,
+        "market_cap": 54311485440,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "SEDG",
+        "price": 51.69,
+        "sma_200": 32.18,
+        "avg_vol_20d": 3830183.0,
+        "market_cap": 3120333568,
+        "sector": "Technology"
+    },
+    {
+        "symbol": "PSX",
+        "price": 175.47,
+        "sma_200": 134.33,
+        "avg_vol_20d": 3616228.0,
+        "market_cap": 70318555136,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "BK",
+        "price": 114.94,
+        "sma_200": 107.63,
+        "avg_vol_20d": 3310462.0,
+        "market_cap": 80153313280,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "MPC",
+        "price": 232.53,
+        "sma_200": 182.41,
+        "avg_vol_20d": 2988604.0,
+        "market_cap": 68535930880,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "PNC",
+        "price": 201.71,
+        "sma_200": 198.22,
+        "avg_vol_20d": 2915879.0,
+        "market_cap": 81554153472,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "GS",
+        "price": 813.53,
+        "sma_200": 791.66,
+        "avg_vol_20d": 2601695.0,
+        "market_cap": 244000849920,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "CME",
+        "price": 307.32,
+        "sma_200": 271.23,
+        "avg_vol_20d": 2510552.0,
+        "market_cap": 110485356544,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "STT",
+        "price": 121.97,
+        "sma_200": 116.74,
+        "avg_vol_20d": 2214590.0,
+        "market_cap": 34067738624,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "PFG",
+        "price": 85.07,
+        "sma_200": 82.89,
+        "avg_vol_20d": 2052489.0,
+        "market_cap": 18689355776,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "CB",
+        "price": 322.58,
+        "sma_200": 293.11,
+        "avg_vol_20d": 1848382.0,
+        "market_cap": 125856694272,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "HIG",
+        "price": 132.65,
+        "sma_200": 130.52,
+        "avg_vol_20d": 1721369.0,
+        "market_cap": 36996120576,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "ACGL",
+        "price": 92.3,
+        "sma_200": 92.09,
+        "avg_vol_20d": 1719111.0,
+        "market_cap": 33470375936,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "TRGP",
+        "price": 237.41,
+        "sma_200": 178.45,
+        "avg_vol_20d": 1597230.0,
+        "market_cap": 51031707648,
+        "sector": "Energy"
+    },
+    {
+        "symbol": "ALL",
+        "price": 205.62,
+        "sma_200": 201.45,
+        "avg_vol_20d": 1473111.0,
+        "market_cap": 53365760000,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "TRV",
+        "price": 296.6,
+        "sma_200": 276.8,
+        "avg_vol_20d": 1468491.0,
+        "market_cap": 66160611328,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "MTB",
+        "price": 198.15,
+        "sma_200": 196.52,
+        "avg_vol_20d": 1373954.0,
+        "market_cap": 29524400128,
+        "sector": "Financials"
+    },
+    {
+        "symbol": "NTRS",
+        "price": 135.74,
+        "sma_200": 131.04,
+        "avg_vol_20d": 1188527.0,
+        "market_cap": 25670793216,
+        "sector": "Financials"
+    }
+]
