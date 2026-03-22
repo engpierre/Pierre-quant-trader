@@ -7,8 +7,32 @@ import time
 import pandas as pd
 import re
 from textblob import TextBlob
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Antigravity Quant Desk", layout="wide", page_icon="🌌", initial_sidebar_state="expanded")
+
+# --- Firebase Analytics Web Component ---
+firebase_tracking_html = """
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDYm0lkqf071PpXZCok8-yQ87CsqLVyGG0",
+    authDomain: "pierre-quant-trader.firebaseapp.com",
+    projectId: "pierre-quant-trader",
+    storageBucket: "pierre-quant-trader.firebasestorage.app",
+    messagingSenderId: "531805264514",
+    appId: "1:531805264514:web:cb387c8a49c3e9ab1fb29b",
+    measurementId: "G-X5HE54REFM"
+  };
+
+  // Natively initialize Google telemetry over the dashboard
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+"""
+components.html(firebase_tracking_html, height=0, width=0)
 
 st.markdown("""
 <style>
