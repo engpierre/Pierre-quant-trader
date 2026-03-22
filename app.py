@@ -130,6 +130,15 @@ st.markdown("""
     [data-testid="stAlert"] {
         color: #0F172A !important;
     }
+    
+    /* Mobile Responsiveness Overrides */
+    @media (max-width: 768px) {
+        h1 { font-size: 1.6rem !important; }
+        .stButton>button { padding: 0.6rem 0.5rem; font-size: 0.85rem; }
+        [data-testid="stExpander"] > summary { font-size: 0.9rem; padding: 0.5rem; }
+        p, span, div { font-size: 0.92rem; }
+        [data-testid="stSidebar"] { min-width: 250px !important; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -298,30 +307,20 @@ if start_run or (run_single and single_ticker):
                     score = c.get('verification_audit', {}).get('validity_score', 0)
                     
                     if score < 60:
-                        sec = c.get('sector')
-                        if sec and sec != 'Unknown':
-                            st.warning(f"⚠️ **${c['symbol']}** triggered a REJECT status (FCS: {score}%). Autonomously scanning the '{sec}' sector to proactively locate high-momentum alternatives!")
-                            
-                            with st.expander(f"Dissect Rejected Fundamentals: {c['symbol']} | FCS: {score}%", expanded=True):
-                                b = c.get('verification_audit', {}).get('breakdown', {})
-                                st.markdown(f"**1. Scout Tracking:** `{'+' if b.get('Scout',0)>=0 else ''}{b.get('Scout',0)}%`")
-                                st.markdown(f"**2. Sentiment Base:** `{'+' if b.get('Sentiment',0)>=0 else ''}{b.get('Sentiment',0)}%`")
-                                st.markdown(f"**3. Tech Mechanics:** `{'+' if b.get('Mechanics',0)>=0 else ''}{b.get('Mechanics',0)}%`")
-                                st.markdown(f"**4. NVIDIA API-Q:** `{'+' if b.get('NVIDIA AI-Q',0)>=0 else ''}{b.get('NVIDIA AI-Q',0)}%`")
-                                st.markdown(f"**5. Insider Audit:** `{'+' if b.get('Insider',0)>=0 else ''}{b.get('Insider',0)}%`")
-                                st.markdown("---")
-                                st.markdown("**Concise Validation Reasoning:**")
-                                for req in c.get('verification_audit', {}).get('reasoning', []):
-                                    st.markdown(f"- {req}")
-
-                            log_output.empty()
-                            agent_args["scout.py"] = ['--sector', sec]
-                            for script in pipeline:
-                                s_args = agent_args.get(script, None)
-                                success = run_agent(script, log_output, s_args)
-                                if not success: break
-                            if success:
-                                st.success(f"✅ Autonomous Alternative Scan Complete for **{sec}**! Evaluated outperforming targets.")
+                        st.warning(f"⚠️ **${c['symbol']}** triggered a REJECT status (FCS: {score}%).")
+                        
+                        with st.expander(f"Dissect Rejected Fundamentals: {c['symbol']} | FCS: {score}%", expanded=True):
+                            st.markdown("**Concise Validation Reasoning:**")
+                            for req in c.get('verification_audit', {}).get('reasoning', []):
+                                st.markdown(f"- {req}")
+                else:
+                    st.warning(f"⚠️ **${nlp_res['target']}** triggered a CATEGORICAL REJECT status (FCS: 0%).")
+                    with st.expander(f"Dissect Rejected Fundamentals: {nlp_res['target']} | FCS: 0%", expanded=True):
+                        st.markdown("**Concise Validation Reasoning:**")
+                        st.markdown(f"- Asset categorically failed to explicitly penetrate the absolute foundational Scout algorithmic floor barriers.")
+                        st.markdown(f"- **Liquidity Constraint:** Evaluated asset failed to sustain 20-Day Average Volume > 1,000,000 shares.")
+                        st.markdown(f"- **Momentum Constraint:** Evaluated asset failed to hold price structure > 200-Day Moving Average.")
+                        st.markdown(f"- **Integrity Constraint:** Evaluated asset potentially fell underneath the $2-Billion Market Cap floor.")
             except Exception as e:
                 pass
                 
@@ -366,22 +365,26 @@ def render_metrics():
                          score = info.get('validity_score', 0)
                          b = info.get('breakdown', {})
                          with st.expander(f"Sub-Agent Diagnostics: {c['symbol']} | FCS Tracker: {score}%"):
-                             st.markdown(f"**1. Scout Base Framework:** Evaluates trailing 200-MA liquidity macro floors. -> `Score Contribution: {'+' if b.get('Scout',0)>=0 else ''}{b.get('Scout',0)}%`")
-                             st.markdown(f"**2. Sentiment NLP Interpreter:** Indexes social momentum against retail exhaustion trends. -> `Score Contribution: {'+' if b.get('Sentiment',0)>=0 else ''}{b.get('Sentiment',0)}%`")
-                             narrative_text = c.get('sentiment', {}).get('narrative', '')
-                             if narrative_text:
-                                 st.info(f"**Leading Expert Synopsis:**\n\n{narrative_text}")
-                             st.markdown(f"**3. Technical Mechanics:** Detects institutional Order Block 'Accumulation' patterns. -> `Score Contribution: {'+' if b.get('Mechanics',0)>=0 else ''}{b.get('Mechanics',0)}%`")
-                             tech_narrative = c.get('technical_audit', {}).get('narrative', '')
-                             if tech_narrative:
-                                 st.info(f"**Certified Quant Empirical Assessment:**\n\n{tech_narrative}")
-                             st.markdown(f"**4. NVIDIA AI-Q RAG (Market Intelligence):** Leverages AI mapping over unstructured 10-K filings + KDB-X baselines. -> `Score Contribution: {'+' if b.get('NVIDIA AI-Q',0)>=0 else ''}{b.get('NVIDIA AI-Q',0)}%`")
-                             st.markdown(f"**5. Insider Audit Node:** Penalizes severe 60-day CEO/CFO cluster execution divergence. -> `Score Contribution: {'+' if b.get('Insider',0)>=0 else ''}{b.get('Insider',0)}%`")
-                             st.markdown("---")
-                             if score < 60:
-                                 st.error(f"**Validator Subsystem (REJECT STATUS):** Synthesizing the 5 vectors yielded `{score}%`. Confluence strictly <60% automatically routes the asset to REJECT due to foundational instability in the metrics listed above.")
-                             else:
+                             if score >= 60:
+                                 st.markdown(f"**1. Scout Base Framework:** Evaluates trailing 200-MA liquidity macro floors. -> `Score Contribution: {'+' if b.get('Scout',0)>=0 else ''}{b.get('Scout',0)}%`")
+                                 st.markdown(f"**2. Sentiment NLP Interpreter:** Indexes social momentum against retail exhaustion trends. -> `Score Contribution: {'+' if b.get('Sentiment',0)>=0 else ''}{b.get('Sentiment',0)}%`")
+                                 narrative_text = c.get('sentiment', {}).get('narrative', '')
+                                 if narrative_text:
+                                     st.info(f"**Leading Expert Synopsis:**\n\n{narrative_text}")
+                                 st.markdown(f"**3. Technical Mechanics:** Detects institutional Order Block 'Accumulation' patterns. -> `Score Contribution: {'+' if b.get('Mechanics',0)>=0 else ''}{b.get('Mechanics',0)}%`")
+                                 tech_narrative = c.get('technical_audit', {}).get('narrative', '')
+                                 if tech_narrative:
+                                     st.info(f"**Certified Quant Empirical Assessment:**\n\n{tech_narrative}")
+                                 st.markdown(f"**4. NVIDIA AI-Q RAG (Market Intelligence):** Leverages AI mapping over unstructured 10-K filings + KDB-X baselines. -> `Score Contribution: {'+' if b.get('NVIDIA AI-Q',0)>=0 else ''}{b.get('NVIDIA AI-Q',0)}%`")
+                                 st.markdown(f"**5. Insider Audit Node:** Penalizes severe 60-day CEO/CFO cluster execution divergence. -> `Score Contribution: {'+' if b.get('Insider',0)>=0 else ''}{b.get('Insider',0)}%`")
+                                 st.markdown("---")
                                  st.success(f"**Validator Subsystem (APPROVAL STATUS):** Synthesizing the 5 vectors yielded `{score}%`. Mathematical logic confidently overrides rejection barriers due to profound confluence across the algorithms listed above.")
+                             else:
+                                 st.markdown("**Concise Validation Reasoning:**")
+                                 for req in info.get('reasoning', []):
+                                     st.markdown(f"- {req}")
+                                 st.markdown("---")
+                                 st.error(f"**Validator Subsystem (REJECT STATUS):** Synthesizing the 5 vectors yielded `{score}%`. Confluence strictly <60% automatically routes the asset to REJECT due to foundational instability.")
                  
         except Exception as e:
             results_output.error(f"Render Payload Error: {e}")
