@@ -3,10 +3,8 @@ import subprocess
 import json
 import sys
 import os
-import time
 import pandas as pd
 import re
-from textblob import TextBlob
 import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Antigravity Quant Desk", layout="wide", page_icon="🌌", initial_sidebar_state="expanded")
@@ -179,7 +177,7 @@ def parse_nlp_query(query):
     words = [w.strip('?,.!:\'\"') for w in words]
     potential_tickers = [w for w in words if re.match(r'^[A-Z]{1,5}$', w) and w not in stop_words and len(w)>0 and w not in sector_map.keys()]
     
-    if potential_tickers and not potential_tickers[0] in ['ARE', 'CAN', 'YOU', 'DAY', 'NOW']:
+    if potential_tickers and potential_tickers[0] not in ['ARE', 'CAN', 'YOU', 'DAY', 'NOW']:
          res["intent"] = "SINGLE_TICKER"
          res["target"] = potential_tickers[0]
          return res
@@ -240,11 +238,12 @@ def run_agent(script_name, log_container, args=None):
         
     process = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
     
-    for line in iter(process.stdout.readline, ''):
-        log_text += line
-        log_container.code(log_text, language='bash')
-        
-    process.stdout.close()
+    if process.stdout:
+        for line in iter(process.stdout.readline, ''):
+            log_text += line
+            log_container.code(log_text, language='bash')
+            
+        process.stdout.close()
     return_code = process.wait()
     if return_code != 0:
         st.error(f"[{script_name}] Execution halted internally with exit code {return_code}.")
@@ -279,12 +278,18 @@ if start_run or (run_single and single_ticker):
              st.sidebar.warning("⚠️ Intent ambiguous. Routing strictly to broad objective pipeline.")
              
     else:
-        if run_scout: pipeline.append("scout.py")
-        if run_sentiment: pipeline.append("sentiment.py")
-        if run_insider: pipeline.append("insider.py")
-        if run_tech: pipeline.append("technical.py")
-        if run_intel: pipeline.append("market_intelligence.py")
-        if run_verify: pipeline.append("verification.py")
+        if run_scout:
+            pipeline.append("scout.py")
+        if run_sentiment:
+            pipeline.append("sentiment.py")
+        if run_insider:
+            pipeline.append("insider.py")
+        if run_tech:
+            pipeline.append("technical.py")
+        if run_intel:
+            pipeline.append("market_intelligence.py")
+        if run_verify:
+            pipeline.append("verification.py")
     
     if not pipeline:
         st.warning("Please toggle at least one agent or submit a chat message to initiate the execution sequence.")
@@ -300,7 +305,7 @@ if start_run or (run_single and single_ticker):
                 
         if success and nlp_res and nlp_res["intent"] == "SINGLE_TICKER":
             try:
-                with open('verified_candidates.json', 'r') as f:
+                with open('verified_candidates.json', 'r', encoding='utf-8') as f:
                     verified_data = json.load(f)
                 if verified_data:
                     c = verified_data[0] 
@@ -317,11 +322,11 @@ if start_run or (run_single and single_ticker):
                     st.warning(f"⚠️ **${nlp_res['target']}** triggered a CATEGORICAL REJECT status (FCS: 0%).")
                     with st.expander(f"Dissect Rejected Fundamentals: {nlp_res['target']} | FCS: 0%", expanded=True):
                         st.markdown("**Concise Validation Reasoning:**")
-                        st.markdown(f"- Asset categorically failed to explicitly penetrate the absolute foundational Scout algorithmic floor barriers.")
-                        st.markdown(f"- **Liquidity Constraint:** Evaluated asset failed to sustain 20-Day Average Volume > 1,000,000 shares.")
-                        st.markdown(f"- **Momentum Constraint:** Evaluated asset failed to hold price structure > 200-Day Moving Average.")
-                        st.markdown(f"- **Integrity Constraint:** Evaluated asset potentially fell underneath the $2-Billion Market Cap floor.")
-            except Exception as e:
+                        st.markdown("- Asset categorically failed to explicitly penetrate the absolute foundational Scout algorithmic floor barriers.")
+                        st.markdown("- **Liquidity Constraint:** Evaluated asset failed to sustain 20-Day Average Volume > 1,000,000 shares.")
+                        st.markdown("- **Momentum Constraint:** Evaluated asset failed to hold price structure > 200-Day Moving Average.")
+                        st.markdown("- **Integrity Constraint:** Evaluated asset potentially fell underneath the $2-Billion Market Cap floor.")
+            except (FileNotFoundError, json.JSONDecodeError):
                 pass
                 
         if success:
@@ -330,7 +335,7 @@ if start_run or (run_single and single_ticker):
 def render_metrics():
     if os.path.exists('verified_candidates.json'):
         try:
-            with open('verified_candidates.json', 'r') as f:
+            with open('verified_candidates.json', 'r', encoding='utf-8') as f:
                 verified_data = json.load(f)
                 
             if verified_data:
@@ -386,7 +391,7 @@ def render_metrics():
                                  st.markdown("---")
                                  st.error(f"**Validator Subsystem (REJECT STATUS):** Synthesizing the 5 vectors yielded `{score}%`. Confluence strictly <60% automatically routes the asset to REJECT due to foundational instability.")
                  
-        except Exception as e:
+        except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError, ValueError, Exception) as e:
             results_output.error(f"Render Payload Error: {e}")
 
 render_metrics()
