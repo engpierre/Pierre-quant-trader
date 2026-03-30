@@ -26,7 +26,7 @@ class TechnicalAgent:
         4. CRITICAL: Scan for 'Volume Anomalies' (Volume > 200% of SMA).
         5. Assess Mansfield RS and provide ATR stops.
         
-        Produce a highly structured Quant Desk Report summarizing these technicals.
+        Produce a highly structured Quant Desk Report summarizing these technicals using the strictly current precise price provided.
         """
 
     def calculate_rsi(self, series, period=14):
@@ -37,16 +37,29 @@ class TechnicalAgent:
         return 100 - (100 / (1 + rs))
 
     def fetch_and_calculate(self):
-        print(f"[*] Fetching technical anomaly data for {self.ticker}...")
+        print(f"[*] Fetching technical anomaly data and live price for {self.ticker}...")
         stock_data = yf.download(self.ticker, period="3mo", interval="1d", progress=False)
         bench_data = yf.download(self.benchmark, period="3mo", interval="1d", progress=False)
         
-        if stock_data.empty: return "Failed to fetch data."
+        # Obtain the most accurate and strictly current price
+        try:
+            live_info = yf.Ticker(self.ticker).info
+            live_price = live_info.get('currentPrice', live_info.get('lastPrice', live_info.get('regularMarketPrice')))
+        except:
+            live_price = None
+
+        if stock_data.empty: return "Failed to fetch historical data."
         if isinstance(stock_data.columns, pd.MultiIndex):
             stock_data.columns = stock_data.columns.droplevel(1)
             bench_data.columns = bench_data.columns.droplevel(1)
 
         df = stock_data.copy()
+        
+        # Inject the precise live price into the dataset prior to calculations
+        if live_price is not None:
+            df.loc[df.index[-1], 'Close'] = live_price
+
+        # Calculate using the precise updated dataframe
         df['SMA_20'] = df['Close'].rolling(window=20).mean()
         df['Vol_SMA_20'] = df['Volume'].rolling(window=20).mean()
         df['RSI'] = self.calculate_rsi(df['Close'])
@@ -68,10 +81,13 @@ class TechnicalAgent:
             if latest['Close'] <= df.loc[min_close_idx]['Close'] * 1.02: # Near the low
                 bullish_divergence = True
 
+        from datetime import datetime
+        current_date = datetime.now().strftime("%B %d, %Y")
+        
         data = f"""
-        LATEST CHART DATA ({self.ticker}):
-        - Current Price: {latest['Close']:.2f}
-        - Current RSI: {latest['RSI']:.2f}
+        LATEST CHART DATA ({self.ticker}) AS OF {current_date}:
+        - STRICTLY CURRENT PRICE: {latest['Close']:.2f}
+        - Current RSI (Calculated on live price): {latest['RSI']:.2f}
         - Volume: {latest['Volume']:.0f} (20-SMA: {latest['Vol_SMA_20']:.0f})
         - Volume Anomaly (>200%): {"YES (FLAGGED)" if vol_anomaly else "NO"}
         - Bullish Divergence Detected: {"YES (FLAGGED)" if bullish_divergence else "NO"}

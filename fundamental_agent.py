@@ -19,7 +19,7 @@ class FundamentalAgent:
         You are the 'Fundamental Agent'.
         
         INSTRUCTIONS:
-        1. Evaluate Profitability Margins, Debt, and Revenue Growth.
+        1. Evaluate the strictly current active price provided alongside Profitability Margins, Debt, and Revenue Growth.
         2. Evaluate P/E against Sector expectation.
         3. CRITICAL NEW DIRECTIVE: Analyze explicitly the SEC Form 4 insider buying/selling activity provided.
            - FLAG clusters of net positive buying within the 60-day window.
@@ -61,17 +61,28 @@ class FundamentalAgent:
         try:
             stock = yf.Ticker(self.ticker)
             info = stock.info
+            
+            # Prioritize retrieving the most accurate and strictly current price available
+            current_price = info.get('currentPrice', info.get('lastPrice', info.get('regularMarketPrice', 'N/A')))
             pe = info.get('trailingPE', 'N/A')
             marg = info.get('profitMargins', 'N/A')
             dte = info.get('debtToEquity', 'N/A')
+            if isinstance(dte, (int, float)):
+                if 1 < dte < 50:
+                    pass
+                elif dte > 500:
+                    import logging
+                    logging.warning("Suspicious Debt-to-Equity detected. Flagging for Auditor.")
+                    dte = f"{dte} (FLAGGED FOR AUDITOR)"
             sect = info.get('sector', 'N/A')
         except:
-            pe, marg, dte, sect = 'N/A', 'N/A', 'N/A', 'N/A'
+            current_price, pe, marg, dte, sect = 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'
             
         form4_data = self.scrape_openinsider()
         
         return f"""
         FUNDAMENTALS FOR {self.ticker} (Sector: {sect}):
+        STRICTLY CURRENT PRICE: {current_price}
         Trailing P/E: {pe}
         Profit Margin: {marg}
         Debt-to-Equity: {dte}
