@@ -4,68 +4,194 @@ import numpy as np
 from supervisor_agent import SupervisorAgent
 
 def render_audit_card(ticker, json_data, raw_reports):
-    """ Modular helper rendering the adversarial tabs dynamically parsing the strict CIO 8-Node JSON schema. """
+    """ Modular helper perfectly structured for intuitive top-down PDF reading natively. """
     v_action = json_data.get('verdict', {}).get('action', 'NEUTRAL')
     v_confidence = json_data.get('verdict', {}).get('confidence', 'Unknown')
     v_logic = json_data.get('verdict', {}).get('final_logic', json_data.get('verdict', {}).get('logic', 'Fetching Master Logic...'))
     integrity = json_data.get('integrity_check', json_data.get('raw_integrity', 'System Status Pending...'))
     delta_str = json_data.get('conviction_delta', 'N/A')
     
-    # 🌟 Integrity Status Banner
-    st.info(f"🛡️ **System Health (Integrity Monitor):** {integrity}")
-    
-    # 🌍 Geopolitical IPB Banner
-    ipb_data = json_data.get('geopolitical', {})
-    if ipb_data.get('geopolitical_regime') == 'VOLATILE':
-        st.error(f"🌍 **GEOPOLITICAL SITREP WARNING (Risk {ipb_data.get('risk_score', 0)}/100):** {ipb_data.get('chokepoint_analysis', 'Friction')} -> {ipb_data.get('strategic_impact', 'Risk detected.')}")
-
-    tab_swarm, tab_critic = st.tabs(["✅ Bullish Swarm", "🚩 Adversarial Critic"])
-
-    with tab_swarm:
-        st.metric("Swarm Conviction Score", f"{json_data.get('swarm_score', 0)}/100")
-        with st.expander("Underlying Swarm Pillars (Anchored by Oracle Ground Truth)"):
-            st.code(raw_reports.get('FetchAI (Oracle)', 'No Oracle Data'), language="json")
-            st.info(raw_reports.get('WhaleWatcher', 'No Whale Data'))
-            st.info(raw_reports.get('Technical', 'No Tech Data'))
-            st.info(raw_reports.get('Fundamental', 'No Fund Data'))
-
-    with tab_critic:
-        critic_data = json_data.get('critic', {})
-        st.metric("Risk Factor (Critic)", f"{json_data.get('critic_score', 0)}/100", delta="Bearish Vulnerability", delta_color="inverse")
-        st.error(f"**CRITIC REBUTTAL:** {critic_data.get('rebuttal', 'No structural weaknesses mathematically uncovered.')}")
-        
-    st.divider()
-    
     v_color = "#3498db"
     if "BUY" in v_action.upper(): v_color = "#2ecc71"
     if "SELL" in v_action.upper() or "CAUTION" in v_action.upper() or "TRAP" in v_action.upper(): v_color = "#e74c3c"
     if "HOLD" in v_action.upper(): v_color = "#FF9800"
-    
-    # CIO Mathematical Adjudication Layout
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c1:
-        st.metric("Conviction Delta (Swarm > Risk)", delta_str)
-    with c2:
-        st.write(f"Confidence Level: **{v_confidence}**")
-    
-    st.markdown(f"### ⚖️ Master CIO Verdict: <span style='color:{v_color};'>{v_action}</span>", unsafe_allow_html=True)
-    
-    # --- Judicial Override UI Logic ---
-    if json_data.get("judicial_override"):
-        st.warning("⚠️ **JUDICIAL OVERRIDE ACTIVE**")
-        st.caption("The Master CIO has overridden the Adversarial Critic based on 'Generational Alpha' parameters (Deep Oversold RSI/Divergence).")
 
-    st.write(f"**CIO Strategy:** {v_logic}")
+    # --- ROW 1: MASTER VERDICT & KEY METRICS ---
+    st.markdown(f"<h3 style='text-align: center;'>Target: {ticker.upper()} | Master CIO Verdict: <span style='color:{v_color};'>{v_action}</span></h3>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    v_col1, v_col2, v_col3 = st.columns([2, 1, 1])
+    with v_col1:
+        if json_data.get("judicial_override"):
+            st.warning("⚠️ **JUDICIAL OVERRIDE ACTIVE:** The Master CIO has overridden the Adversarial Critic based on 'Generational Alpha' parameters.")
+        st.markdown(f"""
+            <div class="intel-card">
+                <div class="intel-header">🧠 Strategy</div>
+                <div style="color: #2c3e50; line-height: 1.6;">{v_logic}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with v_col2:
+        delta_color = "#e74c3c" if "-" in str(delta_str) else "#2ecc71"
+        st.markdown(f"""
+            <div class="quant-metric-box">
+                <div class="metric-label">Conviction</div>
+                <div class="metric-value">{json_data.get('swarm_score', 0)}/100</div>
+                <div style="color: {delta_color}; font-size: 0.9rem; font-weight: bold;">{delta_str}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with v_col3:
+        ipb_data = json_data.get('geopolitical', {})
+        geo_regime = ipb_data.get('geopolitical_regime', 'STABLE')
+        geo_risk = ipb_data.get('risk_score', 0)
+        st.markdown(f"""
+            <div class="quant-metric-box">
+                <div class="metric-label">Regime</div>
+                <div class="metric-value">{geo_regime}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.divider()
+    
+    # --- ROW 1.5: ADVERSARIAL REBUTTAL ---
+    critic_data = json_data.get('critic', {})
+    st.markdown(f"""
+        <div class="intel-card">
+            <div class="intel-header" style="color: #d35400;">🔥 Critic Rebuttal (Danger Score: {json_data.get('critic_score', 0)}/100)</div>
+            <div style="color: #2c3e50; line-height: 1.6;">{critic_data.get('rebuttal', 'No structural weaknesses mathematically uncovered.')}</div>
+        </div>
+    """, unsafe_allow_html=True)
+    st.divider()
+
+    # --- ROW 2: CRITICAL INTELLIGENCE CARDS ---
+    i_col1, i_col2 = st.columns(2)
+    
+    with i_col1:
+        st.markdown(f"""
+            <div class="intel-card">
+                <div class="intel-header" style="color: #2980b9;">🛡️ Integrity Monitor</div>
+                <div style="color: #2c3e50; line-height: 1.6;">{integrity}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with i_col2:
+        if geo_regime == 'VOLATILE':
+            geo_str = f"<b>Zone:</b> {ipb_data.get('chokepoint_analysis', 'Friction')}<br><b>Impact:</b> {ipb_data.get('strategic_impact', 'Risk detected.')}"
+        else:
+            geo_str = "Regime STABLE. No severe kinetic friction vectors mapped."
+            
+        st.markdown(f"""
+            <div class="intel-card">
+                <div class="intel-header" style="color: #27ae60;">🌍 GEOPOLITICAL SITREP (Risk {geo_risk}/100)</div>
+                <div style="color: #2c3e50; line-height: 1.6;">{geo_str}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # --- BOTTOM SECTION: DEEP DIVE (Containment Tabs for PDF bloat reduction) ---
+    tab_mc, tab_tech, tab_fund = st.tabs(["Market Context", "Technical Deep-Dive", "Fundamental Audit"])
+    
+    with tab_mc:
+        st.code(raw_reports.get('FetchAI (Oracle)', 'No Oracle Data'), language="json")
+        st.info(raw_reports.get('WhaleWatcher', 'No Whale Data'))
+        
+    with tab_tech:
+        st.info(raw_reports.get('Technical', 'No Tech Data'))
+        
+    with tab_fund:
+        st.info(raw_reports.get('Fundamental', 'No Fund Data'))
 
 def main():
-    st.set_page_config(page_title="Anti-gravity 8-Node Swarm", page_icon="⚖️", layout="wide", initial_sidebar_state="expanded")
+    # 1. Switch back to wide for better horizontal utility
+    st.set_page_config(page_title="Pierre Quant Agent", page_icon="⚖️", layout="wide", initial_sidebar_state="expanded")
+    
+    # 2. Add Adaptive CSS
+    st.markdown("""
+    <style>
+    /* Font Scaling for High Density */
+    html, body, [class*="css"] {
+        font-size: 14px !important;
+    }
+    h1, h2, h3 {
+        font-size: 20px !important;
+    }
+
+    /* Desktop: Comfortable reading width. Mobile/Print: 100% width. */
+    .main .block-container {
+        max-width: 1200px; /* Mission Parameter: 1200px Constraint */
+        padding-top: 1.5rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+        margin: auto;
+    }
+
+    /* Professional Card Styling - prevents narrow vertical scrolling */
+    .stAlert {
+        border: 1px solid #e6e9ef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        background-color: #ffffff;
+    }
+    
+    /* Custom High-Density Metric Boxes */
+    .quant-metric-box {
+        background-color: #f8f9fa;
+        border: 1px solid #e6e9ef;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    .metric-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+    .metric-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    /* Standardized Card for both Strategy and Critic */
+    .intel-card {
+        background-color: #fffdf0; /* Light yellow/cream to match the Critic box */
+        border: 1px solid #ffe58f; /* Subtle yellow border */
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%; /* Ensures they stay equal height in a column */
+    }
+    
+    .intel-header {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Print Optimization: Removes sidebar/footer and expands text */
+    @media print {
+        [data-testid="stSidebar"], header, footer { display: none !important; }
+        .main .block-container { max-width: 100% !important; padding: 0 !important; }
+        .stButton, .stDownloadButton { display: none !important; }
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
     st.sidebar.title("📡 Command Center")
     mode = st.sidebar.radio("Operating Mode", ["Manual Audit", "Autonomous Recon", "AAR Ledger (Backtest)"])
-    st.sidebar.markdown("---")
-    st.sidebar.caption("Anti-gravity Quant Desk © 2026")
+
     
-    st.markdown("<h1 style='text-align: center;'>⚖️ Anti-gravity War Room</h1>", unsafe_allow_html=True)
+    # Re-inject professional Header
+    st.title("⚖️ Pierre Quant Agent")
     st.markdown("---")
     
     supervisor = SupervisorAgent()

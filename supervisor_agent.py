@@ -125,6 +125,12 @@ class SupervisorAgent:
         # The Insider Auditor now ingests exactly what the swarm produced sequentially, hunting exclusively for decoupling errors.
         insider_json = InsiderIntegrityAuditor(ticker).review(swarm_payload)
         integrity_status = insider_json.get("integrity_check", "Unknown System Health.")
+        
+        # --- WAR ROOM AUDIT HALT ---
+        whale_data = str(reports.get('WhaleWatcher', '')).upper()
+        if ("INSIDER BUY" in integrity_status.upper() or "CEO" in integrity_status.upper()) and ("SELL" in whale_data or "DISTRIBUTIVE" in whale_data):
+            logging.critical(f"WAR ROOM AUDIT HALT TRIGGERED for {ticker}: Insider Buy vs Whale Sell divergence.")
+            return {"verdict": {"action": "WAR ROOM HALT", "confidence": "N/A", "final_logic": "Mission halted. Divergence between Insider Buys and Dark Pool sell-offs."}}, reports
 
         # 4. MASTER SYNTHESIS (CIO Adjudication)
         if not self.model: return None, reports
@@ -177,6 +183,25 @@ class SupervisorAgent:
                 save_verdict_to_blackbox(final_json, ticker, current_price)
             except Exception as loop_e:
                 logging.error(f"Failed to hook Blackbox DB on return: {loop_e}")
+                
+            # --- PHASE 2 AGENTFI INTENT EXPORT ---
+            try:
+                import re
+                tech_report = reports.get("Technical", "")
+                atr_match = re.search(r"ATR-BASED STOP LOSS:\s*([0-9.]+)", tech_report)
+                stop_loss = float(atr_match.group(1)) if atr_match else 0.0
+                
+                intent_schema = {
+                    "Ticker": ticker,
+                    "Conviction_Score": final_json.get("swarm_score", 0),
+                    "Stop_Loss_ATR": stop_loss,
+                    "Proof_of_Analysis": f"ipfs://antigravity/artifacts/{ticker}_signal"
+                }
+                with open("Signal_Report_Intent.json", "w") as f:
+                    json.dump(intent_schema, f, indent=4)
+                logging.info(f"AgentFi Intent Protocol Exported natively for {ticker}.")
+            except Exception as e:
+                logging.error(f"Failed to map AgentFi Intent: {e}")
             
             return final_json, reports
         except Exception as e:

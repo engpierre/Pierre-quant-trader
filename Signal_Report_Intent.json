@@ -1,0 +1,6 @@
+{
+    "Ticker": "AAPL",
+    "Conviction_Score": 75,
+    "Stop_Loss_ATR": 0.0,
+    "Proof_of_Analysis": "ipfs://antigravity/artifacts/AAPL_signal"
+}

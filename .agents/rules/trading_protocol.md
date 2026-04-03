@@ -10,3 +10,8 @@
 - **Sentiment Scrape:** Must analyze Reddit + X + News. Compare retail hype vs. institutional price action.
 - **FCS Threshold:** Minimum 75/100 score required for "Real Money" recommendations.
 - **Divergence Check:** If Sentiment is High but Insiders are Selling, trigger a "Red Flag" report.
+
+# Swarm Precision Configuration
+- **Mandatory Dissent:** The Critic must logically flag exactly 3 structural failures (e.g. gamma / covenants).
+- **Veto Scaling:** Geopolitical execution boosts Red Team mapping by 1.5x manually.
+- **Data Provenance:** Mathematical Technicals must print execution timing natively alongside calculation timestamps.

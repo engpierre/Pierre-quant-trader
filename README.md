@@ -1,6 +1,6 @@
-# 🚀 Google Anti-gravity
+# 🚀 Pierre Quant Agent (Anti-gravity)
 
-**Google Anti-gravity** is an advanced, autonomous algorithmic quantitative research desk. By leveraging a multi-agent AI framework powered natively by Google Generative AI (Gemini), the system continuously monitors, synthesizes, and evaluates market data across multiple critical dimensions—technicals, fundamentals, sentiment, and dark pool integrity—to generate high-conviction, mathematically structured trading signals.
+**Pierre Quant Agent** is an advanced, autonomous algorithmic quantitative research desk engineered for cloud-capable AgentFi execution. By leveraging a multi-agent AI framework powered natively by Google Generative AI (Gemini), the system continuously monitors, synthesizes, and evaluates market data across multiple critical dimensions—technicals, fundamentals, sentiment, and dark pool integrity—to generate mathematically structured trading signals.
 
 ---
 
@@ -13,7 +13,8 @@
 - **Recursive Self-Optimization**: The Swarm acts as an independent learning organism. The CIO queries the SQLite AAR Database dynamically at runtime adjusting Node Trust Coefficients—mathematically amplifying the Adversarial Critic's veto weight if systemic LLM hallucinations drag the Win Rate below 50%.
 - **Dynamic Regime Anchor**: The system natively calculates the overarching macroeconomic regime (Trending-Bull vs Volatile-Bear) using FRED Yield Curve / Asset grids, automatically scaling the Red Team's mathematical veto power based on structural vulnerability.
 - **Algorithmic Covariance Locks**: The Proactive Scanner enforces strict Force Composition metrics natively discarding positively correlated ($R > 0.85$) targets to guarantee perfectly uncoupled Alpha.
-- **Mobile-First 'War Room' Dashboard**: A robust Streamlit UI separating the backend logic into explicit 'Bull vs. Bear' arrays alongside the interactive `Self-Optimization: Trust Matrix Heatmap`.
+- **High-Density 'War Room' Dashboard**: A completely re-engineered Streamlit UI utilizing 'Adaptive Wide' CSS container configurations, bespoke HTML metric bounds (`.quant-metric-box`), and an ultra-condensed Print Protocol for flawless 1-page PDF Executive board reporting.
+- **AgentFi Cloud Architecture**: Completely containerized for decentralized smart-contract integration, exporting dynamic `Signal_Report_Intent.json` files while running dual-duty alongside an MCP-wrapped localized Ground Truth Oracle Server.
 - **Alternative Data Rules Protocol**: Enforces quantitative mechanics like ATR-based stops and Mansfield Relative Strength—ignoring "vibes" in favor of strict empirical data points.
 
 ---
@@ -46,18 +47,20 @@ The algorithmic framework relies on a decentralized, modular python agent hierar
 - *(Optional)* Fetch.AI `uAgent` Network hook Endpoint
 
 ### Installation
-Install the necessary quantitative backend packages and the Streamlit frontend:
+Install the necessary quantitative backend packages and the Streamlit frontend natively:
 
 ```bash
 pip install streamlit google-generativeai requests beautifulsoup4 praw yfinance pandas numpy fredapi
 ```
+
+*(Alternatively, the entire stack including the AAR SQLite ledger is containerized for AgentFi cloud deployments. Simply run `docker-compose up -d` to securely launch the persistent execution loop.)*
 
 ### Environment Setup
 You must initialize your Google Generative AI API Key before running the quantitative desk:
 ```powershell
 $env:GEMINI_API_KEY="your-gemini-key-here"
 ```
-*(Note: As of recent architectural shifts, the external Fetch.AI consensus endpoint is no longer required due to the direct local yfinance oracle migration.)*
+*(Note: As of recent architectural shifts, the Master Oracle relies on a localized yfinance Model Context Protocol payload.)*
 
 ---
 

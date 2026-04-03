@@ -64,6 +64,13 @@ class TechnicalAgent:
         df['Vol_SMA_20'] = df['Volume'].rolling(window=20).mean()
         df['RSI'] = self.calculate_rsi(df['Close'])
         
+        # --- NEW ATR CALCULATION ---
+        df['H-L'] = df['High'] - df['Low']
+        df['H-PC'] = abs(df['High'] - df['Close'].shift(1))
+        df['L-PC'] = abs(df['Low'] - df['Close'].shift(1))
+        df['TR'] = df[['H-L', 'H-PC', 'L-PC']].max(axis=1)
+        df['ATR'] = df['TR'].rolling(window=14).mean()
+        
         latest = df.iloc[-1]
         
         # Volume Anomaly check
@@ -86,8 +93,11 @@ class TechnicalAgent:
         
         data = f"""
         LATEST CHART DATA ({self.ticker}) AS OF {current_date}:
+        - TARGET SYMBOL: {self.ticker}
+        - DATA PROVENANCE: Source: yfinance | Timestamp: {datetime.utcnow().isoformat()} UTC
         - STRICTLY CURRENT PRICE: {latest['Close']:.2f}
         - Current RSI (Calculated on live price): {latest['RSI']:.2f}
+        - ATR-BASED STOP LOSS: {latest['Close'] - (latest['ATR'] * 2):.2f} (Using 2x Multiplier on 14-Day ATR)
         - Volume: {latest['Volume']:.0f} (20-SMA: {latest['Vol_SMA_20']:.0f})
         - Volume Anomaly (>200%): {"YES (FLAGGED)" if vol_anomaly else "NO"}
         - Bullish Divergence Detected: {"YES (FLAGGED)" if bullish_divergence else "NO"}
