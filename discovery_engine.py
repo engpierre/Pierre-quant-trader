@@ -43,14 +43,14 @@ class ScoutAgent:
             # Step 3: Core Mansfield Eq.
             df['mrs'] = ((df['ratio'] / df['sma_ratio']) - 1) * 10
             
-            # Volume Delta (Current Volume vs 20 day avg to align with Swarm Technical triggers)
-            df['vol_sma'] = df['volume'].rolling(window=20).mean()
-            df['vol_delta'] = df['volume'] / df['vol_sma']
+            # Volume Divergence (Current Volume vs 50-day long-term avg to highlight significant breakouts)
+            df['vol_sma_long'] = df['volume'].rolling(window=50).mean()
+            df['vol_divergence'] = df['volume'] / df['vol_sma_long']
 
             current_mrs = df['mrs'].iloc[-1]
-            current_vol_delta = df['vol_delta'].iloc[-1]
+            current_vol_divergence = df['vol_divergence'].iloc[-1]
             
-            return current_mrs, current_vol_delta
+            return current_mrs, current_vol_divergence
         except Exception as e:
             return -999, 0
 
@@ -74,14 +74,14 @@ class ScoutAgent:
                 else:
                     hist = data[ticker]
                     
-                mrs, vol_delta = self.get_mrs(hist, spy_hist)
+                mrs, vol_divergence = self.get_mrs(hist, spy_hist)
                 
                 # Rule of Engagement: Only flag Positive MRS & Solid Volume Divergences
-                if mrs > 0 and vol_delta > 1.2:
+                if mrs > 0 and vol_divergence > 1.2:
                     results.append({
                         "ticker": ticker,
                         "mrs": round(mrs, 3),
-                        "vol_delta": round(vol_delta, 2)
+                        "vol_divergence": round(vol_divergence, 2)
                     })
             except Exception as e:
                 continue
