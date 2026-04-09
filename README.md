@@ -28,7 +28,7 @@ The algorithmic framework relies on a decentralized, modular python agent hierar
 3. **Supervisor Agent (`supervisor_agent.py`)**: The overarching Natural Language judge. It triggers the continuous execution loop: `(Swarm Phase -> Geopolitical Interception -> Auditor Loop -> Critic Attack Phase -> Judicial Master Synthesis -> AAR Persistence Dump)`.
 4. **Optimizer Engine (`optimizer_engine.py`)**: Calculates dynamic $Global Trust$ arrays querying standard accuracy directly injecting mathematical Red Team boosts into the System Prompt.
 5. **Backtest Validator (`backtest_validator.py`)**: The ACID compliant overarching SQLite constructor defining the Mission Logs and Agent Attribution persistence ledgers.
-6. **Critic Agent (`critic_agent.py`)**: The Adversarial Auditor. Deployed explicitly to hunt for "Alpha Hallucination" by identifying structural weaknesses, Bear traps, and Volume Expansions inside the broader Swarm's reports.
+6. **Critic Agent (`critic_agent.py`)**: The Adversarial Auditor. Deployed explicitly to hunt for "Alpha Hallucination" by identifying structural weaknesses, Bear traps, and Volume Expansions inside the broader Swarm's reports. Includes **BlackwellCritic**, a 4-bit quantized local transformer (`google/gemma-4-26b-A4B-it`) specifically optimized via `BitsAndBytesConfig` for execution on RTX 5060 Ti `sm_120` architectures.
 7. **Geopolitical IPB Agent (`geopolitical_agent.py`)**: The Kinetic Friction Mapper. Calculates active supply chain chokepoints and physical trade vulnerabilities natively injecting 1.5x mathematical boosters into the Red Team if the global structure is deemed `VOLATILE`.
 8. **Whale-Watcher Agent (`whale_agent.py`)**: The Intelligence Officer. Maps Dark Pool blocks, Congressional sweeps, and overarching macro regimes utilizing strictly mapped FRED Yield Curve hooks.
 9. **Insider Integrity Auditor (`insider_agent.py`)**: The Logic Decoupler. Specifically isolates the Swarm payload hunting internal hallucination paradoxes natively.
@@ -50,7 +50,7 @@ The algorithmic framework relies on a decentralized, modular python agent hierar
 Install the necessary quantitative backend packages and the Streamlit frontend natively:
 
 ```bash
-pip install streamlit google-generativeai requests beautifulsoup4 praw yfinance pandas numpy fredapi
+pip install streamlit google-generativeai requests beautifulsoup4 praw yfinance pandas numpy fredapi torch transformers bitsandbytes accelerate
 ```
 
 *(Alternatively, the entire stack including the AAR SQLite ledger is containerized for AgentFi cloud deployments. Simply run `docker-compose up -d` to securely launch the persistent execution loop.)*
