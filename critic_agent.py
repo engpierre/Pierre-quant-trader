@@ -1,5 +1,7 @@
 import os
 import json
+import torch
+from transformers import pipeline, BitsAndBytesConfig
 import google.generativeai as genai
 
 class CriticAgent:
@@ -48,3 +50,27 @@ class CriticAgent:
 if __name__ == "__main__":
     agent = CriticAgent("AAPL")
     print(agent.review("Technical Agent says RSI is 40 and volume is normal."))
+
+class BlackwellCritic:
+    def __init__(self):
+        # Optimized for RTX 5060 Ti sm_120
+        self.bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,  # CRITICAL: Blackwell requires bf16
+            bnb_4bit_quant_type="nf4",              # Highest precision for 4-bit
+            bnb_4bit_use_double_quant=True,
+            llm_int8_enable_fp32_cpu_offload=True   # Safeguard for your 16GB VRAM limit
+        )
+
+        # This uses the sm_120 Blackwell support we just enabled
+        self.pipe = pipeline(
+            "text-generation",
+            model="google/gemma-4-26b-A4B-it",
+            model_kwargs={"torch_dtype": torch.bfloat16, "quantization_config": self.bnb_config},
+            device_map="auto"
+        )
+
+    def audit_signal(self, swarm_output):
+        prompt = f"Audit this trading signal for logical fallacies: {swarm_output}"
+        # We append the max_new_tokens argument on the call 
+        return self.pipe(prompt, max_new_tokens=150)
