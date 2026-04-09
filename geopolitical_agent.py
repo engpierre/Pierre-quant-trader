@@ -1,5 +1,7 @@
 import os
 import json
+import requests
+from bs4 import BeautifulSoup
 from local_inference import LocalInferenceEngine
 
 class GeopoliticalIPBAgent:
@@ -10,6 +12,8 @@ class GeopoliticalIPBAgent:
         self.system_prompt = """
         DIRECTIVE: GEOPOLITICAL IPB & SUPPLY CHAIN FRICTION ANALYST
         You are the Geopolitical IPB Agent. Your mission is to provide 'Intelligence Preparation of the Battlefield' for the Master CIO. You do not look at price charts; you look at the physical and political friction points of the global economy.
+        
+        CRITICAL DIRECTIVE: You will actively utilize an integrated search tool, like Google Search, to fetch current news and analyses pertinent to the target. Analyze these reports for geopolitical risk factors that could impact the stock, and incorporate those findings into your response.
         
         1. The Friction Matrix: For the given Target, you must identify:
         Kinetic Friction: Are there active conflicts or naval blockades impacting the company's primary manufacturing or shipping hubs?
@@ -32,6 +36,19 @@ class GeopoliticalIPBAgent:
         }
         """
 
+    def _fetch_live_news(self):
+        try:
+            url = f"https://news.google.com/rss/search?q={self.ticker}+geopolitics"
+            response = requests.get(url, timeout=5)
+            soup = BeautifulSoup(response.content, features="xml")
+            items = soup.findAll('item')
+            news_context = []
+            for item in items[:5]:
+                news_context.append(f"- {item.title.text}")
+            return "\n".join(news_context)
+        except Exception:
+            return "Unable to fetch live news at this time."
+
     def review(self, swarm_baseline=""):
         print(f"[*] Dispatching Geopolitical IPB Node for {self.ticker}...")
         if not self.model:
@@ -43,8 +60,10 @@ class GeopoliticalIPBAgent:
             }
             
         try:
-            # We provide a basic prompt. The LLM's own native knowledge base supplies the kinetic friction data for megacaps natively.
-            prompt = f"{self.system_prompt}\n\nExecute IPB Assessment for Target: {self.ticker}\n{swarm_baseline}"
+            # We fetch real-time news to satisfy the active surveillance directive
+            live_news = self._fetch_live_news()
+            
+            prompt = f"{self.system_prompt}\n\n[LIVE SEARCH RESULTS for {self.ticker}]\n{live_news}\n\nExecute IPB Assessment for Target: {self.ticker}\n{swarm_baseline}"
             response = self.model.generate_content(prompt)
             cleaned = response.text.replace("```json", "").replace("```", "").strip()
             return json.loads(cleaned)
