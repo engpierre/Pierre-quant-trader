@@ -1,71 +1,63 @@
-import os
-import json
 import torch
-from transformers import pipeline, BitsAndBytesConfig
-from local_inference import LocalInferenceEngine
-
-class CriticAgent:
-    def __init__(self, ticker):
-        self.ticker = ticker.upper()
-        self.model = LocalInferenceEngine()
-
-        self.system_prompt = """
-        You are the Adversarial Auditor for Google Anti-gravity. 
-        Your primary directive is to prevent 'Alpha Hallucination' by identifying structural weaknesses in bullish arguments.
-
-        Your Constraints:
-        1. MANDATORY DISSENT: You are strictly forbidden from approving a Bull Case unless you have generated exactly THREE (3) 'Structural Failure Points' mathematically (e.g. Hidden Debt Covenants, Low Float Volatility, or Negative Sector Gamma).
-        2. Mathematical Supremacy: Prioritize Bearish Divergences (Price Higher-High vs. RSI Lower-High) and Volume Decay.
-        3. Cynicism: Assume every 'breakout' is a 'bull trap' until proven otherwise by institutional flow.
-        4. The Rebuttal: You must explicitly challenge the Technical and Sentiment agents. If they see 'Hype,' you see 'Exit Liquidity.'
-
-        Output Format:
-        Return STRICT valid JSON with exactly this structure (no markdown wrapping):
-        {
-          "critique_score": 85, 
-          "rebuttal": "RSI is extended and Volume is decaying indicating a severe bull trap.",
-          "delta": "Bearish Divergence"
-        }
-        (Note: critique_score is 0-100, where 100 = MAXIMUM RISK/DANGER of trade failure).
-        """
-
-    def review(self, swarm_payload):
-        print(f"[*] Dispatching Adversarial Critic for {self.ticker}...")
-        if not self.model:
-            return {"critique_score": 0, "rebuttal": "API Key missing. Critic offline.", "delta": "Blind"}
-            
-        try:
-            prompt = f"{self.system_prompt}\n\nTear apart this Bullish Swarm Payload for {self.ticker}:\n{swarm_payload}"
-            response = self.model.generate_content(prompt)
-            cleaned = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(cleaned)
-        except Exception as e:
-            return {"critique_score": 0, "rebuttal": f"Critic parsing error: {str(e)}", "delta": "Error"}
-
-if __name__ == "__main__":
-    agent = CriticAgent("AAPL")
-    print(agent.review("Technical Agent says RSI is 40 and volume is normal."))
+from transformers import pipeline
 
 class BlackwellCritic:
-    def __init__(self):
-        # Optimized for RTX 5060 Ti sm_120
-        self.bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,  # CRITICAL: Blackwell requires bf16
-            bnb_4bit_quant_type="nf4",              # Highest precision for 4-bit
-            bnb_4bit_use_double_quant=True,
-            llm_int8_enable_fp32_cpu_offload=True   # Safeguard for your 16GB VRAM limit
-        )
-
-        # This uses the sm_120 Blackwell support we just enabled
-        self.pipe = pipeline(
+    def __init__(self, model_id=r"C:\Users\crypt\.cache\huggingface\hub\models--google--gemma-4-26b-A4B-it\snapshots\47b6801b24d15ff9bcd8c96dfaea0be9ed3a0301"):
+        print("Initializing Blackwell Critic (Red Team) on RTX 5060 Ti...")
+        
+        # Consistent Blackwell quantization for the Critic node
+        self.audit_pipe = pipeline(
             "text-generation",
-            model="google/gemma-4-26b-A4B-it",
-            model_kwargs={"torch_dtype": torch.bfloat16, "quantization_config": self.bnb_config},
-            device_map="auto"
+            model=model_id,
+            model_kwargs={
+                "torch_dtype": torch.bfloat16,
+                "load_in_4bit": True,
+                "bnb_4bit_compute_dtype": torch.bfloat16,
+                "bnb_4bit_quant_type": "nf4"
+            },
+            device_map="auto",
+            # Hard-limit the GPU to 13GB to leave room for the OS and KV Cache
+            max_memory={0: "13GiB", "cpu": "24GiB"}, 
+            local_files_only=True,
+            low_cpu_mem_usage=True,
+            trust_remote_code=True
         )
 
-    def audit_signal(self, swarm_output):
-        prompt = f"Audit this trading signal for logical fallacies: {swarm_output}"
-        # We append the max_new_tokens argument on the call 
-        return self.pipe(prompt, max_new_tokens=150)
+    def audit_swarm(self, swarm_payload, reality_anchor_data=None):
+        """
+        Executes an adversarial audit of the Swarm's findings.
+        """
+        prompt = f"""
+        Role: Adversarial Auditor (Blackwell Critic)
+        Mission: Identify Alpha Hallucinations and structural weaknesses.
+        
+        Swarm Payload: {swarm_payload}
+        Reality Anchor (Excel/Oracle): {reality_anchor_data}
+        
+        Instructions:
+        1. Compare Swarm data against the Reality Anchor.
+        2. If a logic paradox or data mismatch exists, issue a HARD VETO.
+        3. Output your audit in the following format:
+        
+        --- AUDIT START ---
+        VETO: [TRUE/FALSE]
+        PROBABILITY: [0-100%]
+        EXPLANATION: [Reasoning for the audit result]
+        FRICTION POINTS: [Bulleted list of data mismatches]
+        --- AUDIT END ---
+        """
+        
+        audit_raw = self.audit_pipe(prompt, max_new_tokens=512, do_sample=False)
+        return self.parse_audit(audit_raw[0]['generated_text'])
+
+    def parse_audit(self, raw_text):
+        # Extracts structured data for the Supervisor XO
+        report = {
+            "is_veto": "VETO: TRUE" in raw_text.upper(),
+            "explanation": "No audit explanation provided."
+        }
+        
+        if "EXPLANATION:" in raw_text:
+            report["explanation"] = raw_text.split("EXPLANATION:")[1].split("FRICTION POINTS:")[0].strip()
+        
+        return report

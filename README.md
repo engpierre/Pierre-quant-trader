@@ -19,6 +19,28 @@
 - **Real-Time Web Reconnaissance**: Natively intercepts and parses real-time global news via active RSS scraping without relying on external or paid search API keys.
 - **Alternative Data Rules Protocol**: Enforces quantitative mechanics like ATR-based stops and 50-day Volume Divergences—ignoring "vibes" in favor of strict empirical data points.
 
+### Phase 1: Doctrine & Command Protocol
+
+**1. The Reasoning XO (Executive Officer) Persona**
+The Supervisor Agent is no longer a passive script. It is now designated as the Reasoning XO.
+
+- **Chain-of-Thought (CoT) Requirement:** For every market analysis, the XO must generate an internal reasoning trace, comparing agent outputs against the Blackwell Critic’s adversarial audit.
+- **Conversational Logic:** The XO is tasked with translating high-density JSON telemetry into professional, data-backed verbal reports for the MWO.
+
+**2. The Hard Veto Protocol (MWO-in-the-Loop)**
+To eliminate "Alpha Hallucinations" and systemic drift, a strict Hard Veto protocol is now in effect:
+
+- **Veto Trigger:** If the Blackwell Critic identifies a logic paradox (e.g., price/volume divergence not supported by the Reality Anchor), a Hard Veto is issued.
+- **Pipeline Freeze:** In a Veto state, all automated trade intent exports (Signal_Report_Intent.json) are locked.
+- **Manual Override:** The system will enter a "Standby" state, providing a forensic audit to the MWO. Execution only proceeds upon a manual Accept or Bypass command.
+
+**3. Adversarial Forensic Protocol**
+When a Veto occurs, the Supervisor must provide a Forensic Audit consisting of:
+
+- **Conflict Mapping:** Identifying which specific nodes are in disagreement (e.g., Technical vs. Whale).
+- **Hallucination Probability:** A confidence score reflecting the likelihood that an agent is "hallucinating" data points not found in the local Oracle database.
+- **Friction Points:** A bulleted summary of empirical data mismatches.
+
 ---
 
 ## 🏗️ Architecture

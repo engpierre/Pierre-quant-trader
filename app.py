@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from supervisor_agent import SupervisorAgent
+from supervisor_agent import SupervisorXO
 
 def render_audit_card(ticker, json_data, raw_reports):
     """ Modular helper perfectly structured for intuitive top-down PDF reading natively. """
@@ -194,7 +194,7 @@ def main():
     st.title("⚖️ Pierre Quant Agent")
     st.markdown("---")
     
-    supervisor = SupervisorAgent()
+    supervisor = SupervisorXO()
 
     if mode == "Manual Audit":
         st.markdown("<h4 style='text-align: center; color: gray;'>Reactive Ticker Analysis</h4>", unsafe_allow_html=True)
