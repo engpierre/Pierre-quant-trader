@@ -120,7 +120,7 @@ def fetch_live_prices(tickers):
     for ticker in tickers:
         try:
             req = urllib.request.Request(f'https://query2.finance.yahoo.com/v8/finance/chart/{ticker}', headers={'User-Agent': 'Mozilla/5.0'})
-            response = urllib.request.urlopen(req)
+            response = urllib.request.urlopen(req, timeout=10)
             data = json.loads(response.read().decode())
             price = float(data['chart']['result'][0]['meta']['regularMarketPrice'])
             prices[ticker] = price
