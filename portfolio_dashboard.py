@@ -1,7 +1,7 @@
 import streamlit as st
 import sqlite3
-import pandas as pd
-import yfinance as yf
+import urllib.request
+import json
 import time
 import math
 from voice_engine import speak
@@ -117,22 +117,23 @@ st.markdown("""
 @st.cache_data(ttl=15)
 def fetch_live_prices(tickers):
     if not tickers: return {}
+    prices = {}
     try:
-        data = yf.download(" ".join(tickers), period="1d", progress=False)
-        prices = {}
-        if 'Close' in data:
-            close_data = data['Close']
-            if len(tickers) == 1:
-                prices[tickers[0]] = float(close_data.values[-1][0] if len(close_data.shape) > 1 else close_data.values[-1])
-            else:
-                for t in tickers:
-                    if t in close_data.columns:
-                        val = float(close_data[t].values[-1])
-                        if not math.isnan(val):
-                            prices[t] = val
+        # Fetch individual tickers via yahoo finance chart API since multi-ticker chart API throws 404
+        for ticker in tickers:
+            try:
+                url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=1d"
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req) as response:
+                    data = json.loads(response.read().decode())
+                    if "chart" in data and "result" in data["chart"] and data["chart"]["result"]:
+                        meta = data["chart"]["result"][0]["meta"]
+                        prices[ticker] = float(meta["regularMarketPrice"])
+            except Exception:
+                continue
         return prices
-    except:
-        return {}
+    except Exception as e:
+        return prices
 
 def get_watchlist():
     try:
@@ -142,7 +143,7 @@ def get_watchlist():
         rows = cursor.fetchall()
         conn.close()
         
-        # Pure Python array of dictionaries (no pandas)
+        # Pure Python array of dictionaries
         watchlist = []
         for row in rows:
             watchlist.append({
