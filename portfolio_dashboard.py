@@ -1,10 +1,9 @@
 import streamlit as st
 import sqlite3
-import pandas as pd
-import yfinance as yf
-import time
+import urllib.request
+import json
 import math
-from voice_engine import speak
+import time
 
 DB_PATH = r"c:\Users\Pierre\.openclaw\workspace\pierre-quant\pierre_quant.db"
 
@@ -31,7 +30,7 @@ st.markdown("""
     /* Jarvis Frosted Glass Metric Card */
     .metric-card {
         background: rgba(22, 27, 34, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1); /* Thin translucent border */
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 12px;
         padding: 15px;
         backdrop-filter: blur(12px);
@@ -52,7 +51,7 @@ st.markdown("""
     }
     .emerald-text {
         color: #10B981;
-        text-shadow: 0 0 10px rgba(16, 185, 129, 0.6); /* Glowing metrics */
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
         font-weight: bold;
     }
     
@@ -117,22 +116,18 @@ st.markdown("""
 @st.cache_data(ttl=15)
 def fetch_live_prices(tickers):
     if not tickers: return {}
-    try:
-        data = yf.download(" ".join(tickers), period="1d", progress=False)
-        prices = {}
-        if 'Close' in data:
-            close_data = data['Close']
-            if len(tickers) == 1:
-                prices[tickers[0]] = float(close_data.values[-1][0] if len(close_data.shape) > 1 else close_data.values[-1])
-            else:
-                for t in tickers:
-                    if t in close_data.columns:
-                        val = float(close_data[t].values[-1])
-                        if not math.isnan(val):
-                            prices[t] = val
-        return prices
-    except:
-        return {}
+    prices = {}
+    for ticker in tickers:
+        try:
+            req = urllib.request.Request(f'https://query2.finance.yahoo.com/v8/finance/chart/{ticker}', headers={'User-Agent': 'Mozilla/5.0'})
+            response = urllib.request.urlopen(req)
+            data = json.loads(response.read().decode())
+            price = float(data['chart']['result'][0]['meta']['regularMarketPrice'])
+            prices[ticker] = price
+        except Exception as e:
+            prices[ticker] = 0.0
+            print(f"Failed to fetch price for {ticker}: {e}")
+    return prices
 
 def get_watchlist():
     try:
@@ -142,7 +137,6 @@ def get_watchlist():
         rows = cursor.fetchall()
         conn.close()
         
-        # Pure Python array of dictionaries (no pandas)
         watchlist = []
         for row in rows:
             watchlist.append({
@@ -152,7 +146,8 @@ def get_watchlist():
                 'currency': row[3]
             })
         return watchlist
-    except:
+    except Exception as e:
+        st.error(f"Failed to load watchlist: {e}")
         return []
 
 # --- HEADER ---
@@ -168,7 +163,6 @@ if len(watchlist) > 0:
     
     html_grid = "<div class='metric-grid'>"
     
-    # Python for loop to render independent cards
     for item in watchlist:
         t = item['ticker']
         s = item['shares']
@@ -201,7 +195,7 @@ if len(watchlist) > 0:
             ret_class += " card-detail"
             ret_display = f"{ret:+.2f}%"
             
-        price_disp = f"${p:,.2f}" if p else "---"
+        price_disp = f"${p:,.2f}" if p > 0 else "---"
         
         html_grid += f"""
         <div class='{card_class}'>
@@ -242,10 +236,28 @@ with st.container():
     b_col1, b_col2 = st.columns(2)
     with b_col1:
         if st.button("📥 Commit Position Update", use_container_width=True, type="primary"):
-            if sel_ticker:
+            if sel_ticker and sel_shares > 0:
                 try:
                     conn = sqlite3.connect(DB_PATH)
-                    conn.execute("INSERT INTO watchlist (ticker, shares, avg_cost, currency) VALUES (?, ?, ?, ?) ON CONFLICT(ticker) DO UPDATE SET shares=excluded.shares, avg_cost=excluded.avg_cost", (sel_ticker, sel_shares, sel_cost, sel_cur))
+                    cursor = conn.cursor()
+
+                    # Check if position exists
+                    cursor.execute("SELECT shares, avg_cost FROM watchlist WHERE ticker=?", (sel_ticker,))
+                    row = cursor.fetchone()
+
+                    if row:
+                        current_shares = float(row[0])
+                        current_avg_cost = float(row[1])
+
+                        # Weighted average cost calculation
+                        total_shares = current_shares + sel_shares
+                        new_avg_cost = (current_shares * current_avg_cost + sel_shares * sel_cost) / total_shares
+
+                        cursor.execute("UPDATE watchlist SET shares=?, avg_cost=?, currency=? WHERE ticker=?", (total_shares, new_avg_cost, sel_cur, sel_ticker))
+                    else:
+                        # Insert new position
+                        cursor.execute("INSERT INTO watchlist (ticker, shares, avg_cost, currency) VALUES (?, ?, ?, ?)", (sel_ticker, sel_shares, sel_cost, sel_cur))
+
                     conn.commit()
                     conn.close()
                     st.success(f"Position {sel_ticker} cleanly updated.")
@@ -253,6 +265,10 @@ with st.container():
                     st.rerun()
                 except Exception as e:
                     st.error(f"SQL Error: {e}")
+            elif not sel_ticker:
+                st.warning("Please enter a valid ticker.")
+            elif sel_shares <= 0:
+                st.warning("Shares must be greater than 0.")
     with b_col2:
         if st.button("❌ Purge Asset", use_container_width=True):
             if sel_ticker and sel_ticker != "NEW...":
@@ -278,12 +294,12 @@ if prompt := st.chat_input("Initiate direct sequence..."):
             import sys
             sys.path.append(r"c:\Users\Pierre\.openclaw\workspace\pierre-quant")
             from supervisor_agent import SupervisorXO
+            from voice_engine import speak
             xo = SupervisorXO()
             verbal_report, _ = xo.generate_response(prompt)
+            speak(verbal_report)
         except Exception as e:
             verbal_report = f"Offline routing failed. System message: {str(e)}. Using localized text response for '{prompt}'."
             
     with st.chat_message("assistant", avatar="⚡"):
         st.markdown(f"<div class='typewriter'>{verbal_report}</div>", unsafe_allow_html=True)
-    
-    speak(verbal_report)
