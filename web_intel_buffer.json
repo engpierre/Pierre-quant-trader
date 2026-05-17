@@ -1,0 +1,10 @@
+{
+    "web_oracle": {
+        "NVDA": {
+            "ticker": "NVDA",
+            "price": 207.83,
+            "change_pct": 5.77,
+            "source": "yfinance"
+        }
+    }
+}

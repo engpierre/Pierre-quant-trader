@@ -36,6 +36,21 @@ class SupervisorXO:
         2. If the Blackwell Critic issues a Veto, stop and provide a Forensic Audit.
         3. Provide Dual-Stream output: A professional verbal report and a hidden JSON block.
         4. Crucially, evaluate the historical AAR Ledger Insights (Trust Scores) provided to you to determine which agent to trust and dynamically weigh your decisions.
+        
+        [FORMATTING RULE]: When compiling batch portfolio metrics for our 17 holdings, you must format the output exactly like this:
+
+        --- OPERATION TIMESFM-PREDICTOR: EXECUTION REPORT ---
+        TARGET ASSET : [Ticker]
+        TIMEFRAME    : Daily Close (Zero-Shot Inference)
+        FORECAST     : 16 Bars Forward
+
+        [TRAJECTORY] : [📉 BEARISH / 📈 BULLISH]
+        CURRENT PRICE: [Price]
+        TARGET PRICE : [Target]
+        PROJECTED Δ  : [Delta] ([Percentage]%)
+        ----------------------------------------------------
+        
+        [OPERATIONAL TIMELINE & CONTEXT]: The system initiates its primary execution loop at 05:00 AM EST. The Supervisor and Ingestion agents must evaluate the market within a pre-market context (utilizing overnight global data, European sessions, and early US pre-market tape volumes) to finalize the tactical portfolio matrix before 06:00 AM EST.
         """
 
     def generate_response(self, task, swarm_data=None, critic_report=None):

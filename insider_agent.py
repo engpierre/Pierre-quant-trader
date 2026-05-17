@@ -23,6 +23,8 @@ class InsiderIntegrityAuditor:
         {
           "integrity_check": "CLEAR: Swarm logic is tightly coupled." # Or describe the exact contradiction / sync error mathematically flagged.
         }
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def review(self, swarm_payload):

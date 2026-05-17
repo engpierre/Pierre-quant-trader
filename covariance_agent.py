@@ -1,3 +1,4 @@
+# CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
 import yfinance as yf
 import pandas as pd
 import logging

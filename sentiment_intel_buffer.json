@@ -1,0 +1,21 @@
+{
+    "sentiments": {
+        "PLTR": {
+            "ticker": "PLTR",
+            "buzz": {
+                "articlesInLastWeek": 247,
+                "buzz": 247,
+                "weeklyAverage": 20,
+                "isHighVolatility": true
+            },
+            "sentiment": {
+                "bullishPercent": 36.03,
+                "bearishPercent": 18.62
+            },
+            "sectorComparison": {
+                "sectorAverageBullishPercent": null,
+                "sectorAverageNewsScore": null
+            }
+        }
+    }
+}

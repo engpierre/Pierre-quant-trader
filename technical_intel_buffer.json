@@ -1,0 +1,52 @@
+{
+  "technicals": {
+    "PLTR": {
+      "ticker": "PLTR",
+      "price": "133.75500",
+      "rsi_14": "41.19194",
+      "sma_50": "145.60410",
+      "sma_200": "164.077150"
+    },
+    "BTCUSD": {
+      "ticker": "BTCUSD",
+      "price": 79133.91,
+      "rsi": 48.4382234585078,
+      "ema20": 79134.65047476736,
+      "adx": 10.676740158409723,
+      "recommendation": "NEUTRAL",
+      "buy_signals": 7,
+      "sell_signals": 9,
+      "timestamp": "2026-05-15T17:17:11.121483",
+      "status": "SUCCESS"
+    },
+    "AAPL": {
+      "ticker": "AAPL",
+      "price": 300.255,
+      "rsi": 51.52329178134315,
+      "ema20": 300.18592519696585,
+      "adx": 20.01202928798173,
+      "recommendation": "NEUTRAL",
+      "buy_signals": 9,
+      "sell_signals": 8,
+      "timestamp": "2026-05-15T17:00:37.089344",
+      "status": "SUCCESS"
+    },
+    "NVDA": {
+      "ticker": "NVDA",
+      "price": 225.3,
+      "rsi": 26.399223897144097,
+      "ema20": 226.07784262718724,
+      "adx": 49.54894075379114,
+      "recommendation": "STRONG_SELL",
+      "buy_signals": 1,
+      "sell_signals": 15,
+      "timestamp": "2026-05-15T17:14:06.799342",
+      "status": "SUCCESS"
+    },
+    "GLW": {
+      "ticker": "GLW",
+      "status": "ERROR",
+      "message": "Exchange or symbol not found."
+    }
+  }
+}

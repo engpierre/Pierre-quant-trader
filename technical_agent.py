@@ -24,6 +24,8 @@ class TechnicalAgent:
         CRITICAL DIRECTIVE: You are a senior financial analyst; integrate a Monte Carlo simulation to project potential price paths for the given ticker. Use historical volatility and returns to model geometric Brownian motion, running thousands of simulations to generate a probability distribution of future prices. Output a summary of key percentiles, the median project price, and include a clear potential price target designed for dashboard display, alongside your existing technical signals. You MUST explicitly list the projected median price target in a clear, standalone format, ensuring it is visually identifiable for the dashboard.
         
         Produce a highly structured Quant Desk Report summarizing these technicals using the strictly current precise price provided.
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def calculate_rsi(self, series, period=14):
@@ -38,12 +40,47 @@ class TechnicalAgent:
         stock_data = yf.download(self.ticker, period="1y", interval="1d", progress=False)
         bench_data = yf.download(self.benchmark, period="1y", interval="1d", progress=False)
         
-        # Obtain the most accurate and strictly current price
+        # Operation Web-Oracle: Obtain the most accurate and strictly current price
+        import json
+        import os
+        
+        live_price = None
+        
+        # 1. Try Twelve Data Buffer
+        tech_buffer_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "technical_intel_buffer.json")
         try:
-            live_info = yf.Ticker(self.ticker).info
-            live_price = live_info.get('currentPrice', live_info.get('lastPrice', live_info.get('regularMarketPrice')))
-        except:
-            live_price = None
+            if os.path.exists(tech_buffer_path):
+                with open(tech_buffer_path, 'r') as f:
+                    tech_data = json.load(f)
+                    for t, data in tech_data.get('technicals', {}).items():
+                        if t.upper() == self.ticker and data.get('price') is not None:
+                            live_price = float(data.get('price'))
+                            break
+        except Exception:
+            pass
+            
+        # 2. Fallback to Web Oracle Buffer
+        if live_price is None:
+            web_buffer_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web_intel_buffer.json")
+            try:
+                if os.path.exists(web_buffer_path):
+                    with open(web_buffer_path, 'r') as f:
+                        web_data = json.load(f)
+                        for t, data in web_data.get('web_oracle', {}).items():
+                            if t.upper() == self.ticker and data.get('price') is not None:
+                                live_price = float(data.get('price'))
+                                print(f"[!] Technical Agent: API Offline. Using Web Oracle price: {live_price}")
+                                break
+            except Exception:
+                pass
+                
+        # 3. Final Fallback to yfinance historical
+        if live_price is None:
+            try:
+                live_info = yf.Ticker(self.ticker).info
+                live_price = live_info.get('currentPrice', live_info.get('lastPrice', live_info.get('regularMarketPrice')))
+            except:
+                live_price = None
 
         if stock_data.empty: return f"Failed to fetch historical data for {self.ticker}."
         if isinstance(stock_data.columns, pd.MultiIndex):

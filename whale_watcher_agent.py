@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import requests
 from local_inference import LocalInferenceEngine
@@ -15,6 +16,7 @@ class WhaleWatcherAgent:
         
         Your Analysis Pillars:
         1. Dark Pool Prints: Evaluate 'Block Trades' and OTC volume indicating institutional positioning.
+           If using Finnhub Insider Sentiment (MSPR), you must cross-reference the monthly MSPR score against our cached March 2026 SEC insider clusters.
         2. Congressional Alpha: Analyze STOCK Act filings (House/Senate committee buying/selling).
         3. Macro Liquidity (FRED): The algorithmic framework has parsed the T10Y2Y and WALCL to identify the environment.
         
@@ -32,6 +34,8 @@ class WhaleWatcherAgent:
         Output Format: 
         Ensure your analysis header begins exactly with: [REGIME: Volatile-Bear] or [REGIME: Trending-Bull] or [REGIME: Neutral] based on the JSON Regime_Identifier provided.
         Then, explain the actionable delta between retail sentiment and institutional flow.
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def fetch_whale_data(self):
@@ -43,7 +47,9 @@ class WhaleWatcherAgent:
             "pillars": {
                 "dark_pool": {"available": False, "data": None},
                 "congress": {"available": False, "data": None},
-                "macro": {"available": False, "data": None}
+                "macro": {"available": False, "data": None},
+                "sec_filings": {"available": False, "data": None},
+                "ltm_vault": {"available": False, "data": None}
             }
         }
 
@@ -58,7 +64,19 @@ class WhaleWatcherAgent:
             except Exception as e:
                 payload["pillars"]["dark_pool"]["data"] = f"Error: {e}"
         else:
-            print(f"[!] [{self.ticker}] FMP_API_KEY missing. Skipping Dark Pool analysis.")
+            finnhub_key = os.getenv("FINNHUB_API_KEY")
+            if finnhub_key:
+                print(f"[!] [{self.ticker}] FMP missing. Falling back to Finnhub Insider Sentiment.")
+                try:
+                    url = f"https://finnhub.io/api/v1/stock/insider-sentiment?symbol={self.ticker}&from=2026-01-01&to=2026-05-08&token={finnhub_key}"
+                    response = requests.get(url, timeout=5).json()
+                    time.sleep(1) # 1-second delay for rate limiting
+                    payload["pillars"]["dark_pool"]["available"] = True
+                    payload["pillars"]["dark_pool"]["data"] = {"source": "Finnhub", "data": response}
+                except Exception as e:
+                    payload["pillars"]["dark_pool"]["data"] = f"Finnhub Error: {e}"
+            else:
+                print(f"[!] [{self.ticker}] FMP and FINNHUB API keys missing. Skipping Dark Pool analysis.")
 
         # 2. Congressional Logic (Quiver Quant)
         quiver_key = os.getenv("QUIVER_API_KEY")
@@ -97,6 +115,31 @@ class WhaleWatcherAgent:
         else:
             print(f"[!] [{self.ticker}] FRED_API_KEY missing. Skipping Macro Pulse.")
 
+        # 4. SEC EDGAR Buffer Check
+        try:
+            sec_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sec_intel_buffer.json")
+            if os.path.exists(sec_path):
+                with open(sec_path, 'r') as f:
+                    sec_data = json.load(f)
+                payload["pillars"]["sec_filings"] = {"available": True, "data": sec_data}
+            else:
+                payload["pillars"]["sec_filings"] = {"available": False, "data": "File not found"}
+        except Exception as e:
+            payload["pillars"]["sec_filings"] = {"available": False, "data": f"Error: {e}"}
+
+        # 5. SQLite LTM Vault Check
+        try:
+            vault_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ltm_vault.db")
+            if os.path.exists(vault_path):
+                import sqlite3
+                conn = sqlite3.connect(vault_path)
+                conn.close()
+                payload["pillars"]["ltm_vault"] = {"available": True, "data": "Connected"}
+            else:
+                payload["pillars"]["ltm_vault"] = {"available": False, "data": "Database not found"}
+        except Exception as e:
+            payload["pillars"]["ltm_vault"] = {"available": False, "data": f"Error: {e}"}
+
         return payload
 
     def review(self):
@@ -115,5 +158,5 @@ class WhaleWatcherAgent:
             return f"Whale LLM Error: {str(e)}"
 
 if __name__ == "__main__":
-    agent = WhaleWatcherAgent("AAPL")
+    agent = WhaleWatcherAgent("NVDA")
     print(agent.review())

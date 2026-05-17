@@ -19,6 +19,8 @@ class FundamentalAgent:
         3. CRITICAL NEW DIRECTIVE: Analyze explicitly the SEC Form 4 insider buying/selling activity provided.
            - FLAG clusters of net positive buying within the 60-day window.
            - Calculate overall net accumulation/distribution context.
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def scrape_openinsider(self):

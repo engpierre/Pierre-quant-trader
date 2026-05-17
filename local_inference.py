@@ -1,6 +1,12 @@
-import torch
+try:
+    import torch
+    from transformers import pipeline, BitsAndBytesConfig
+except ImportError:
+    torch = None
+    pipeline = None
+    BitsAndBytesConfig = None
+
 import logging
-from transformers import pipeline, BitsAndBytesConfig
 import warnings
 
 # Suppress standard transformers verbosity
@@ -17,6 +23,10 @@ class LocalInferenceEngine:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(LocalInferenceEngine, cls).__new__(cls)
+            if torch is None:
+                logging.warning("[INFERENCE] Torch not found. Running in headless data-only mode.")
+                return cls._instance
+                
             logging.info("[INFERENCE] Initializing Gemma-4 26B Air-Gapped Engine... Please wait.")
             
             # Optimized for RTX 5060 Ti sm_120

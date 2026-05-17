@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 from bs4 import BeautifulSoup
 import praw
@@ -28,6 +29,8 @@ class SentimentAgent:
         4. Cross-Reference: Is retail sentiment diverging from institutional market action?
         
         Output a structured Quant Desk Report.
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def fetch_vix(self):
@@ -78,12 +81,28 @@ class SentimentAgent:
         except:
             return []
 
+    def fetch_finnhub_sentiment(self):
+        finnhub_key = os.getenv("FINNHUB_API_KEY")
+        if not finnhub_key:
+            return "Finnhub API key missing."
+        print("[*] Fetching Finnhub News Sentiment...")
+        try:
+            url = f"https://finnhub.io/api/v1/news-sentiment?symbol={self.ticker}&token={finnhub_key}"
+            response = requests.get(url, timeout=5).json()
+            time.sleep(1) # 1-second delay for rate limiting
+            buzz = response.get("buzz", {}).get("buzz", 0)
+            flag = "[HIGH-CONVICTION RALLY]" if buzz > 80 else ""
+            return f"--- FINNHUB SENTIMENT ---\nBuzz Score: {buzz} {flag}\nData: {response}"
+        except Exception as e:
+            return f"[!] Error fetching Finnhub sentiment: {e}"
+
     def gather_data(self):
         vix_data = self.fetch_vix()
         finviz = self.scrape_finviz()
         reddit = self.fetch_reddit_discussions()
+        finnhub_sentiment = self.fetch_finnhub_sentiment()
         
-        return f"{vix_data}\n--- FINVIZ ---\n{chr(10).join(finviz)}\n\n--- REDDIT ---\n{chr(10).join(reddit)}\n"
+        return f"{vix_data}\n--- FINVIZ ---\n{chr(10).join(finviz)}\n\n--- REDDIT ---\n{chr(10).join(reddit)}\n\n{finnhub_sentiment}\n"
 
     def review(self, return_raw=False):
         print(f"[*] Generating Sentiment Report for {self.ticker}...")
@@ -100,4 +119,5 @@ class SentimentAgent:
             return str(e)
 
 if __name__ == "__main__":
-    SentimentAgent("AAPL").review()
+    agent = SentimentAgent("NVDA")
+    print(agent.review(return_raw=True))

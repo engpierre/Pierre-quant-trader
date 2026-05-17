@@ -34,6 +34,8 @@ class GeopoliticalIPBAgent:
           "chokepoint_analysis": "TSMC production bottleneck due to regional naval drills.",
           "strategic_impact": "High-conviction downside risk for hardware margins."
         }
+        
+        CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
     def _fetch_live_news(self):

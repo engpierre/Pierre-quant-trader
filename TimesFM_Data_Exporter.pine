@@ -1,0 +1,63 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Anti-Gravity Core
+//@version=5
+indicator("TimesFM Data Exporter", overlay=true, max_labels_count=1)
+
+// ====================================================================================================
+// CRITICAL DIRECTIVE (OPERATION PLAIN-ENGLISH): 
+// You are strictly prohibited from responding in any language other than English. 
+// All technical data, analysis, and verdicts must be rendered in English (US/UK) 
+// regardless of the source data language.
+// ====================================================================================================
+
+// --- Configuration ---
+lookback = input.int(64, title="Lookback Window (Bars)", minval=1, maxval=500, tooltip="Number of historical bars to package for TimesFM ingestion.")
+
+// --- State Matrices ---
+var close_arr = array.new_float(0)
+var vol_arr = array.new_float(0)
+
+// --- Core Logic ---
+// Append current bar data
+array.push(close_arr, close)
+array.push(vol_arr, volume)
+
+// Maintain lookback window size
+if array.size(close_arr) > lookback
+    array.shift(close_arr)
+    array.shift(vol_arr)
+
+// --- Serialization Engine ---
+// We only need to process serialization on the last bar or real-time bar to save processing power.
+if barstate.islast or barstate.isrealtime
+    
+    // Convert float arrays to string arrays for joining
+    string[] close_str_arr = array.new_string(0)
+    string[] vol_str_arr = array.new_string(0)
+    
+    // Ensure we have data
+    if array.size(close_arr) > 0
+        for i = 0 to array.size(close_arr) - 1
+            array.push(close_str_arr, str.tostring(array.get(close_arr, i)))
+            array.push(vol_str_arr, str.tostring(array.get(vol_arr, i)))
+            
+    string serialized_close = array.join(close_str_arr, ",")
+    string serialized_volume = array.join(vol_str_arr, ",")
+    
+    // Construct the structured JSON-like string block
+    string payload = str.format('{{"ticker": "{0}", "close_matrix": "[{1}]", "volume_matrix": "[{2}]"}}', syminfo.ticker, serialized_close, serialized_volume)
+    
+    // --- Data Export & Alert Handling ---
+    
+    // 1. Alert Output (For automated Sentry webhooks)
+    alert(payload, alert.freq_once_per_bar_close)
+    
+    // 2. Visual Output (For manual copy-pasting from the chart interface)
+    // Note: TradingView Data Window does not support strings. We use a transparent label instead.
+    var label payload_label = na
+    if na(payload_label)
+        payload_label := label.new(bar_index, high, text="TimesFM Payload Ready.\n(See Alerts Log or Webhook)", style=label.style_label_down, color=color.rgb(20, 20, 20, 20), textcolor=color.white)
+    else
+        label.set_xy(payload_label, bar_index, high)
+        // Optionally update text if debugging, though large payloads can freeze the TV UI.
+        // label.set_text(payload_label, "TimesFM Payload Generated.")

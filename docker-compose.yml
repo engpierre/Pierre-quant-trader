@@ -1,11 +1,10 @@
-version: '3.8'
 services:
   antigravity-desk:
     build: .
     ports:
       - "8501:8501"
+      - "8000:8000"
     volumes:
-      # Map the local directory to persist the SQLite DB explicitly protecting the AAR learning matrices
       - .:/app
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
