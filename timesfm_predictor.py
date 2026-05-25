@@ -1,4 +1,8 @@
 # CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
+import sys
+if sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 import sqlite3
 import json
 import ast
@@ -156,10 +160,10 @@ def execute_timesfm_forecast(ticker):
         print(f"TARGET ASSET : {ticker}")
         print(f"TIMEFRAME    : Daily Close (Zero-Shot Inference)")
         print(f"FORECAST     : 16 Bars Forward\n")
-        print(f"[TRAJECTORY] : {'📈 BULLISH' if trajectory == 'BULLISH' else '📉 BEARISH'}")
+        print(f"[TRAJECTORY] : {'BULLISH' if trajectory == 'BULLISH' else 'BEARISH'}")
         print(f"CURRENT PRICE: ${current_price:,.2f}")
         print(f"TARGET PRICE : ${target_price:,.2f}")
-        print(f"PROJECTED Δ  : ${delta:,.2f} ({pct_change:+.2f}%)")
+        print(f"PROJECTED DIFF: ${delta:,.2f} ({pct_change:+.2f}%)")
         print("------------------------------------------------------")
         
     except Exception as e:

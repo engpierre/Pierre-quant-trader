@@ -17,16 +17,27 @@ class TVPullAgent:
             # If the ticker contains 'USD', we pivot to the Crypto Screener.
             is_crypto = "USD" in symbol or "BTC" in symbol
             current_screener = "crypto" if is_crypto else "america"
-            current_exchange = "BINANCE" if is_crypto else "NASDAQ"
-
-            handler = TA_Handler(
-                symbol=symbol,
-                screener=current_screener,
-                exchange=current_exchange,
-                interval=interval
-            )
             
-            analysis = handler.get_analysis()
+            exchanges_to_try = ["BINANCE"] if is_crypto else ["NASDAQ", "NYSE", "AMEX"]
+            analysis = None
+            last_exception = None
+            
+            for exchange in exchanges_to_try:
+                try:
+                    handler = TA_Handler(
+                        symbol=symbol,
+                        screener=current_screener,
+                        exchange=exchange,
+                        interval=interval
+                    )
+                    analysis = handler.get_analysis()
+                    break
+                except Exception as e:
+                    last_exception = e
+                    continue
+                    
+            if not analysis:
+                raise last_exception or Exception("Failed to fetch analysis on all fallback exchanges.")
             
             payload = {
                 "ticker": symbol,

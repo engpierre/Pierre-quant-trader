@@ -1,17 +1,28 @@
 import os
 import time
 import requests
+import json
 from bs4 import BeautifulSoup
 import praw
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from local_inference import LocalInferenceEngine
+import google.generativeai as genai
+
+env_path = r"C:\Users\Pierre\.openclaw\workspace\pierre-quant\.env"
+if os.path.exists(env_path):
+    with open(env_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.startswith("GEMINI_API_KEY="):
+                os.environ["GEMINI_API_KEY"] = line.split("=", 1)[1].strip()
 
 class SentimentAgent:
     def __init__(self, ticker):
         self.ticker = ticker
-        self.model = LocalInferenceEngine()
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
             
         self.reddit_client_id = os.getenv("REDDIT_CLIENT_ID")
         self.reddit_client_secret = os.getenv("REDDIT_CLIENT_SECRET")
@@ -32,6 +43,15 @@ class SentimentAgent:
         
         CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
+        
+        self.model = genai.GenerativeModel(
+            model_name="gemini-3.5-flash",
+            system_instruction=self.system_prompt,
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=0.1
+            )
+        )
 
     def fetch_vix(self):
         """Fetches the ^VIX standard deviation and surge metrics."""
@@ -104,19 +124,34 @@ class SentimentAgent:
         
         return f"{vix_data}\n--- FINVIZ ---\n{chr(10).join(finviz)}\n\n--- REDDIT ---\n{chr(10).join(reddit)}\n\n{finnhub_sentiment}\n"
 
+    def write_buffer(self, payload):
+        buffer_path = r"C:\Users\Pierre\.openclaw\workspace\pierre-quant\sentiment_intel_buffer.json"
+        with open(buffer_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=4)
+
     def review(self, return_raw=False):
         print(f"[*] Generating Sentiment Report for {self.ticker}...")
-        data = self.gather_data()
-        if return_raw:
-            return data
+        
+        if not os.environ.get("GEMINI_API_KEY"):
+            err = {"status": "offline", "error": "API Key missing. Sentiment Agent offline."}
+            self.write_buffer(err)
+            return err
             
-        if not self.model: return f"[!] Missing GEMINI_API_KEY. Context:\n{data}"
         try:
-            prompt = f"{self.system_prompt}\n\nPlease parse this data:\n{data}"
+            data = self.gather_data()
+            if return_raw:
+                return data
+                
+            prompt = f"Please parse this sentiment data and return a JSON status report:\n{data}"
             response = self.model.generate_content(prompt)
-            return response.text
+            result = json.loads(response.text)
+            result["ticker"] = self.ticker
+            self.write_buffer(result)
+            return result
         except Exception as e:
-            return str(e)
+            err = {"status": "offline", "error": f"Sentiment agent failed: {str(e)}"}
+            self.write_buffer(err)
+            return err
 
 if __name__ == "__main__":
     agent = SentimentAgent("NVDA")

@@ -1,11 +1,21 @@
 import os
 import json
-from local_inference import LocalInferenceEngine
+import google.generativeai as genai
+
+env_path = r"C:\Users\Pierre\.openclaw\workspace\pierre-quant\.env"
+if os.path.exists(env_path):
+    with open(env_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.startswith("GEMINI_API_KEY="):
+                os.environ["GEMINI_API_KEY"] = line.split("=", 1)[1].strip()
 
 class InsiderIntegrityAuditor:
     def __init__(self, ticker):
         self.ticker = ticker.upper()
-        self.model = LocalInferenceEngine()
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
             
         self.system_prompt = """
         You are the Internal Integrity Auditor for the Google Anti-gravity 8-Node Swarm.
@@ -27,18 +37,39 @@ class InsiderIntegrityAuditor:
         CRITICAL DIRECTIVE: You are strictly prohibited from responding in any language other than English. All technical data, analysis, and verdicts must be rendered in English (US/UK) regardless of the source data language.
         """
 
+        self.model = genai.GenerativeModel(
+            model_name="gemini-3.5-flash",
+            system_instruction=self.system_prompt,
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=0.1
+            )
+        )
+
+    def write_buffer(self, payload):
+        buffer_path = r"C:\Users\Pierre\.openclaw\workspace\pierre-quant\sec_intel_buffer.json"
+        with open(buffer_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=4)
+
     def review(self, swarm_payload):
         print(f"[*] Dispatching Internal Logic Auditor for {self.ticker}...")
-        if not self.model:
-            return {"integrity_check": "API Key missing. Auditor offline."}
+        
+        if not os.environ.get("GEMINI_API_KEY"):
+            err = {"status": "offline", "error": "API Key missing. Auditor offline."}
+            self.write_buffer(err)
+            return err
             
         try:
-            prompt = f"{self.system_prompt}\n\nAnalyze this Swarm Payload for contradictions:\n{swarm_payload}"
+            prompt = f"Analyze this Swarm Payload for contradictions regarding {self.ticker}:\n{swarm_payload}"
             response = self.model.generate_content(prompt)
-            cleaned = response.text.replace("```json", "").replace("```", "").strip()
-            return json.loads(cleaned)
+            result = json.loads(response.text)
+            result["ticker"] = self.ticker
+            self.write_buffer(result)
+            return result
         except Exception as e:
-            return {"integrity_check": f"Auditor parsing error: {str(e)}"}
+            err = {"status": "offline", "error": f"Auditor parsing error: {str(e)}"}
+            self.write_buffer(err)
+            return err
 
 if __name__ == "__main__":
     agent = InsiderIntegrityAuditor("AAPL")

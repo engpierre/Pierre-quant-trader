@@ -1,0 +1,16 @@
+{
+  "technicals": {
+    "GLW": {
+      "ticker": "GLW",
+      "price": 191.94,
+      "rsi": 44.06209652605477,
+      "ema20": 192.5219792704381,
+      "adx": 19.179768284764904,
+      "recommendation": "SELL",
+      "buy_signals": 5,
+      "sell_signals": 12,
+      "timestamp": "2026-05-22T08:12:11.817607",
+      "status": "SUCCESS"
+    }
+  }
+}

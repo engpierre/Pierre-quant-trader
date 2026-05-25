@@ -1,0 +1,8 @@
+{
+    "ticker": "BTCUSD",
+    "timeframe": "1D",
+    "indicator": "RSI_Cross",
+    "action": "BUY",
+    "price": 68500.0,
+    "message": "RSI Oversold Breakout Detected"
+}

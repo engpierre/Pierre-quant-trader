@@ -1,0 +1,11 @@
+=== OPERATION GRAFT AUDIT ===
+Timestamp: 05/22/2026 12:46:26
+Path 1: C:\Users\Pierre\.openclaw\workspace\pierre-quant\skills\shell_arm\run_shell.ps1 (Registered)
+Path 2: C:\Users\Pierre\.openclaw\workspace\pierre-quant\skills\web_arm\browse_url.ps1 (Registered)
+Status: Direct Injection Architecture initialized. Tools bound.
+=== ABSOLUTE PATH HARDENING AUDIT ===
+Timestamp: 05/22/2026 12:57:39
+Path 1 (shell_arm): C:\Users\Pierre\.openclaw\workspace\pierre-quant\skills\shell_arm\SKILL.md updated with absolute path and -cmd argument.
+Path 2 (web_arm): C:\Users\Pierre\.openclaw\workspace\pierre-quant\skills\web_arm\SKILL.md updated with absolute path and -url argument.
+Status: Tool registry hard-coded to absolute file paths.
+Sidecar Executioner (watcher.ps1) active. Agent monitoring disabled to prevent file-lock race conditions.

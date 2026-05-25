@@ -99,7 +99,8 @@ def fetch_local_sentiment(ticker):
 
 def main():
     # Execute a test run on PLTR as requested
-    tickers = ["PLTR"]
+    target_arg = sys.argv[1] if len(sys.argv) > 1 else "PLTR"
+    tickers = [target_arg]
     all_sentiment_data = {}
     
     print("Initiating Operation Sentiment Pulse (Local Intelligence Model)...")

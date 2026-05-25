@@ -171,6 +171,8 @@ def process_and_flag(awards):
             print(f"**[NOMINAL]** | {ticker} ({recipient}) | Total Award: ${total_award:,.2f} | Est Revenue: ${revenue:,.2f} | Impact: {impact_ratio*100:.1f}%")
 
 if __name__ == "__main__":
+    import sys
+    target_arg = sys.argv[1] if len(sys.argv) > 1 else "GLOBAL_SCAN"
     init_discovery_db()
     awards_data = fetch_global_usaspending_data()
     if awards_data:

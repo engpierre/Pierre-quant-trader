@@ -1,21 +1,23 @@
 {
-    "sentiments": {
-        "PLTR": {
-            "ticker": "PLTR",
-            "buzz": {
-                "articlesInLastWeek": 247,
-                "buzz": 247,
-                "weeklyAverage": 20,
-                "isHighVolatility": true
-            },
-            "sentiment": {
-                "bullishPercent": 36.03,
-                "bearishPercent": 18.62
-            },
-            "sectorComparison": {
-                "sectorAverageBullishPercent": null,
-                "sectorAverageNewsScore": null
-            }
-        }
-    }
+    "target": "NVDA",
+    "overall_sentiment": "Neutral",
+    "sentiment_score": 58,
+    "vix_evaluation": {
+        "latest_vix": 16.59,
+        "previous_vix": 16.7,
+        "vix_change_pct": -0.66,
+        "vix_status": "NORMAL",
+        "fear_panic_flag": false
+    },
+    "sentiment_shift_flag": false,
+    "retail_institutional_divergence": {
+        "divergence_detected": true,
+        "details": "Retail sentiment continues to exhibit high speculative hype ('NVIDIA before AI boom' comparisons), whereas institutional and news flow is pricing in significant geopolitical headwinds, notably the report that Beijing's refusal to approve H200 purchases could cost Nvidia $30B."
+    },
+    "key_drivers": [
+        "Geopolitical headwinds in China with reports of a $30B revenue impact due to blocked H200 purchases.",
+        "Product pipeline expansion including the Vera CPU push lifting the LPDDR outlook.",
+        "Persistent supply chain constraints for critical resources amid intense AI chip competition."
+    ],
+    "ticker": "NVDA"
 }
