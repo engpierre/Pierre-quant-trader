@@ -95,6 +95,35 @@ def generate_trade_canvas(dossier: SentryDossierPayload) -> Path:
     return canvas_path
 
 
+def write_morning_brief_note(brief_text: str, systemic_sigma: float = 1.85, total_positions: int = 20) -> Path:
+    """Generates an executive morning brief note in vault/Briefs/."""
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    timestamp_str = now.strftime("%Y-%m-%d_%H%M%S")
+    file_path = BRIEFS_DIR / f"Brief_{timestamp_str}.md"
+
+    content = f"""---
+title: "Executive Flight Check - {date_str}"
+date: "{date_str}"
+timestamp: "{now.isoformat()}"
+systemic_risk_sigma: {systemic_sigma:.2f}
+active_holdings: {total_positions}
+type: "morning_flight_check"
+---
+
+# 🌅 Executive Morning Flight Check ({date_str})
+
+{brief_text}
+
+## References
+- [[Portfolio Overview]]
+- [[Morning Briefs]]
+"""
+    file_path.write_text(content, encoding="utf-8")
+    logger.info(f"Morning brief note generated: {file_path}")
+    return file_path
+
+
 def write_master_portfolio_overview(dossiers: list[SentryDossierPayload]) -> Path:
     """Generates the master Portfolio Overview linking all recon notes and canvases."""
     overview_path = VAULT_PATH / "Portfolio Overview.md"
