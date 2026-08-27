@@ -29,7 +29,7 @@ def run_command(command_name: str, *args) -> str:
         "alpha": (RUNNERS_DIR / "run_confluence_scan.py", REPORTS_DIR / "Daily_Alpha_Matrix.md"),
         "audit": (RUNNERS_DIR / "run_confluence_scan.py", REPORTS_DIR / "Rolling_Hit_Rate.md"),
         "recon": (RUNNERS_DIR / "run_recon.py", None),
-        "ratchet": (RUNNERS_DIR / "run_portfolio_hud_sync.py", None)
+        "ratchet": (RUNNERS_DIR / "run_profit_guard.py", REPORTS_DIR / "Profit_Guard_Matrix.md")
     }
 
     if cmd_clean not in cmd_map:
