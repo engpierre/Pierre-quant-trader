@@ -27,7 +27,7 @@ def run_command(command_name: str, *args) -> str:
     cmd_map = {
         "status": (RUNNERS_DIR / "run_swarm_status.py", REPORTS_DIR / "System_Status.md"),
         "alpha": (RUNNERS_DIR / "run_confluence_scan.py", REPORTS_DIR / "Daily_Alpha_Matrix.md"),
-        "audit": (RUNNERS_DIR / "run_confluence_scan.py", REPORTS_DIR / "Rolling_Hit_Rate.md"),
+        "audit": (RUNNERS_DIR / "run_weekly_call_audit.py", REPORTS_DIR / "Weekly_Call_Performance.md"),
         "recon": (RUNNERS_DIR / "run_recon.py", None),
         "ratchet": (RUNNERS_DIR / "run_profit_guard.py", REPORTS_DIR / "Profit_Guard_Matrix.md")
     }
