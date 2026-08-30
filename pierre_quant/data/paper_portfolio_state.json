@@ -1,0 +1,41 @@
+{
+  "last_sync": 1788123685.2889786,
+  "total_equity": 4458.94,
+  "unrealized_pnl": 0.0,
+  "realized_pnl": 0.0,
+  "positions": [
+    {
+      "ticker": "PFE",
+      "shares": 53,
+      "entry": 27.96,
+      "spot": 27.96,
+      "stop": 26.9199,
+      "pnl_usd": 0.0,
+      "pnl_pct": 0.0,
+      "stop_dist_pct": 3.72,
+      "status": "OPEN"
+    },
+    {
+      "ticker": "CELH",
+      "shares": 45,
+      "entry": 32.98,
+      "spot": 32.98,
+      "stop": 29.9547,
+      "pnl_usd": 0.0,
+      "pnl_pct": 0.0,
+      "stop_dist_pct": 9.17,
+      "status": "OPEN"
+    },
+    {
+      "ticker": "TSCO",
+      "shares": 43,
+      "entry": 34.72,
+      "spot": 34.72,
+      "stop": 32.8141,
+      "pnl_usd": 0.0,
+      "pnl_pct": 0.0,
+      "stop_dist_pct": 5.49,
+      "status": "OPEN"
+    }
+  ]
+}
