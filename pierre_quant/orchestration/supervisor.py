@@ -1,6 +1,6 @@
 """
 pierre_quant/orchestration/supervisor.py
-Agent 01 (Supervisor Orchestrator) - Master Confluence Engine with Resilient Environment Fallback.
+Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with Parallel IO.
 """
 from __future__ import annotations
 import argparse
@@ -9,10 +9,12 @@ import logging
 import os
 import subprocess
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Tuple
 
 # Force UTF-8 output on Windows console
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
@@ -31,8 +33,10 @@ PROJECT_ROOT = Path(r"C:\Users\Pierre\.openclaw\workspace\pierre-quant")
 if PROJECT_ROOT.exists() and str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# Safe fallback imports for core analytical nodes
-from pierre_quant.core.agent_contract import AgentExecutionPayload, DirectionalBias, ExecutionStatus
+# Core Analytical Node Imports
+from pierre_quant.core.agent_contract import (
+    AgentExecutionPayload, DirectionalBias, ExecutionStatus
+)
 from pierre_quant.analysis.statistical_invariance import StatisticalInvarianceAgent
 from pierre_quant.analysis.momentum_vector import MomentumVectorAgent
 from pierre_quant.analysis.visual_sentry import VisualSentryAgent
@@ -70,6 +74,7 @@ class SupervisorSynthesisResult:
 
 class SupervisorOrchestrator:
     AGENT_ID = "01_supervisor_orchestrator"
+    NODE_TIMEOUT_SECONDS = 10.0
 
     @classmethod
     def _execute_cli_worker(cls, script_rel_path: str, ticker: str) -> Dict[str, Any]:
@@ -79,9 +84,8 @@ class SupervisorOrchestrator:
         
         try:
             cmd = [py_bin, str(script_path), "--ticker", ticker, "--json"]
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=cls.NODE_TIMEOUT_SECONDS)
             if proc.returncode == 0 and proc.stdout.strip():
-                # Extract valid JSON substring
                 stdout_clean = proc.stdout.strip()
                 json_start = stdout_clean.find("{")
                 json_end = stdout_clean.rfind("}")
@@ -107,29 +111,93 @@ class SupervisorOrchestrator:
         }
 
     @classmethod
+    def _safe_execute_node(cls, node_key: str, ticker: str, fn: Callable[..., Any], *args, **kwargs) -> Tuple[str, Any]:
+        """Executes a single specialist worker inside a timeout-protected thread wrapper."""
+        try:
+            result = fn(*args, **kwargs)
+            return node_key, result
+        except Exception as err:
+            logger.warning(f"Specialist worker {node_key} failed on {ticker}: {err}")
+            fallback_payload = AgentExecutionPayload(
+                agent_id=node_key,
+                ticker=ticker,
+                status=ExecutionStatus.FAILED,
+                directional_bias=DirectionalBias.NEUTRAL,
+                confidence_score=50.0,
+                spot_price=0.0,
+                metrics={
+                    "opacity_penalty": True,
+                    "execution_error": str(err)
+                },
+                error_message=str(err)
+            )
+            return node_key, fallback_payload
+
+    @classmethod
     def synthesize(cls, ticker: str) -> SupervisorSynthesisResult:
         clean_ticker = ticker.strip().upper().lstrip("$")
 
-        # 1. Execute Isolated Predictive Workers (GPU 0 & GPU 1)
-        res_timesfm = cls._execute_cli_worker("pierre_quant/models/timesfm_engine.py", clean_ticker)
-        res_chronos = cls._execute_cli_worker("pierre_quant/models/chronos_engine.py", clean_ticker)
+        # 1. Dispatch Concurrent Analytical Pipeline via ThreadPoolExecutor
+        tasks: Dict[str, Any] = {}
+        with ThreadPoolExecutor(max_workers=12) as executor:
+            # GPU Predictive Subprocesses (cuda:0 & cuda:1)
+            future_tfm = executor.submit(cls._execute_cli_worker, "pierre_quant/models/timesfm_engine.py", clean_ticker)
+            future_chr = executor.submit(cls._execute_cli_worker, "pierre_quant/models/chronos_engine.py", clean_ticker)
 
-        # 2. Execute Deterministic Analytical Pipeline (Divisions III–V)
-        p_stat = StatisticalInvarianceAgent.analyze(clean_ticker)
-        p_mom = MomentumVectorAgent.analyze(clean_ticker)
-        p_sentry = VisualSentryAgent.analyze(clean_ticker)
-        p_money = SmartMoneyAgent.analyze(clean_ticker)
-        p_timeframe = TimeframeMatrixAgent.analyze(clean_ticker)
-        p_fund = CorporateFundamentalsAgent.evaluate(clean_ticker)
-        p_sec = SECWatchdogAgent.evaluate(clean_ticker)
-        p_sector = SectorRotationAgent.evaluate(clean_ticker)
-        p_macro = MacroEnvironmentAgent.evaluate(clean_ticker)
-        p_sent = SentimentHarvesterAgent.harvest(clean_ticker)
-        p_risk = PortfolioGuardAgent.calculate_stops(clean_ticker)
+            # Parallel Network & Analytical Workers
+            future_stat = executor.submit(cls._safe_execute_node, "07_stat_invariance", clean_ticker, StatisticalInvarianceAgent.analyze, clean_ticker)
+            future_mom = executor.submit(cls._safe_execute_node, "08_momentum", clean_ticker, MomentumVectorAgent.analyze, clean_ticker)
+            future_sentry = executor.submit(cls._safe_execute_node, "09_visual_sentry", clean_ticker, VisualSentryAgent.analyze, clean_ticker)
+            future_money = executor.submit(cls._safe_execute_node, "10_smart_money", clean_ticker, SmartMoneyAgent.analyze, clean_ticker)
+            future_timeframe = executor.submit(cls._safe_execute_node, "11_timeframe", clean_ticker, TimeframeMatrixAgent.analyze, clean_ticker)
+            future_fund = executor.submit(cls._safe_execute_node, "12_fundamentals", clean_ticker, CorporateFundamentalsAgent.evaluate, clean_ticker)
+            future_sec = executor.submit(cls._safe_execute_node, "13_sec_watchdog", clean_ticker, SECWatchdogAgent.evaluate, clean_ticker)
+            future_sector = executor.submit(cls._safe_execute_node, "14_sector_rotation", clean_ticker, SectorRotationAgent.evaluate, clean_ticker)
+            future_macro = executor.submit(cls._safe_execute_node, "15_macro", clean_ticker, MacroEnvironmentAgent.evaluate, clean_ticker)
+            future_sent = executor.submit(cls._safe_execute_node, "16_sentiment", clean_ticker, SentimentHarvesterAgent.harvest, clean_ticker)
+            future_risk = executor.submit(cls._safe_execute_node, "02_risk", clean_ticker, PortfolioGuardAgent.calculate_stops, clean_ticker)
+
+            # Collect GPU Predictive Results with timeout
+            try:
+                res_timesfm = future_tfm.result(timeout=cls.NODE_TIMEOUT_SECONDS)
+            except Exception:
+                res_timesfm = {"status": "FAILED", "directional_bias": "NEUTRAL", "confidence_score": 50.0, "spot_price": 0.0, "metrics": {"forecast_delta_pct": 0.0, "opacity_penalty": True}}
+
+            try:
+                res_chronos = future_chr.result(timeout=cls.NODE_TIMEOUT_SECONDS)
+            except Exception:
+                res_chronos = {"status": "FAILED", "directional_bias": "NEUTRAL", "confidence_score": 50.0, "spot_price": 0.0, "metrics": {"forecast_delta_pct": 0.0, "opacity_penalty": True}}
+
+            # Collect Analytical Worker Results
+            analytical_futures = [
+                future_stat, future_mom, future_sentry, future_money, future_timeframe,
+                future_fund, future_sec, future_sector, future_macro, future_sent, future_risk
+            ]
+
+            payload_map: Dict[str, AgentExecutionPayload] = {}
+            for fut in as_completed(analytical_futures, timeout=cls.NODE_TIMEOUT_SECONDS + 2.0):
+                try:
+                    k, payload = fut.result()
+                    payload_map[k] = payload
+                except Exception as err:
+                    logger.warning(f"Future collection error: {err}")
+
+        # Fallback mappings if any specific future failed collection
+        p_stat = payload_map.get("07_stat_invariance") or StatisticalInvarianceAgent.analyze(clean_ticker)
+        p_mom = payload_map.get("08_momentum") or MomentumVectorAgent.analyze(clean_ticker)
+        p_sentry = payload_map.get("09_visual_sentry") or VisualSentryAgent.analyze(clean_ticker)
+        p_money = payload_map.get("10_smart_money") or SmartMoneyAgent.analyze(clean_ticker)
+        p_timeframe = payload_map.get("11_timeframe") or TimeframeMatrixAgent.analyze(clean_ticker)
+        p_fund = payload_map.get("12_fundamentals") or CorporateFundamentalsAgent.evaluate(clean_ticker)
+        p_sec = payload_map.get("13_sec_watchdog") or SECWatchdogAgent.evaluate(clean_ticker)
+        p_sector = payload_map.get("14_sector_rotation") or SectorRotationAgent.evaluate(clean_ticker)
+        p_macro = payload_map.get("15_macro") or MacroEnvironmentAgent.evaluate(clean_ticker)
+        p_sent = payload_map.get("16_sentiment") or SentimentHarvesterAgent.harvest(clean_ticker)
+        p_risk = payload_map.get("02_risk") or PortfolioGuardAgent.calculate_stops(clean_ticker)
 
         spot = res_timesfm.get("spot_price") or res_chronos.get("spot_price") or p_sentry.spot_price
 
-        # 3. Predictive Dual-Model Divergence Resolution
+        # 2. Predictive Dual-Model Divergence Resolution
         t_ok = res_timesfm.get("status") == "SUCCESS" and not res_timesfm.get("metrics", {}).get("opacity_penalty")
         c_ok = res_chronos.get("status") == "SUCCESS" and not res_chronos.get("metrics", {}).get("opacity_penalty")
 
@@ -147,7 +215,7 @@ class SupervisorOrchestrator:
             is_pred_conflict = False
             pred_regime = "SINGLE_MODEL_OPACITY" if (t_ok or c_ok) else "PREDICTIVE_BLINDSPOT"
 
-        # 4. Weighted Confluence Vote Engine
+        # 3. Weighted Confluence Vote Engine
         bull_weight, bear_weight, total_weight = 0.0, 0.0, 0.0
         vote_table: Dict[str, Dict[str, Any]] = {}
 
@@ -179,15 +247,22 @@ class SupervisorOrchestrator:
             }
 
         # Ingest Standard Analytical Nodes
-        payload_map = {
+        standard_map = {
             "07_stat_invariance": p_stat, "08_momentum": p_mom, "09_visual_sentry": p_sentry,
             "10_smart_money": p_money, "11_timeframe": p_timeframe, "12_fundamentals": p_fund,
             "13_sec_watchdog": p_sec, "14_sector_rotation": p_sector, "15_macro": p_macro, "16_sentiment": p_sent
         }
 
-        for key, p in payload_map.items():
-            if p.status != ExecutionStatus.SUCCESS:
+        for key, p in standard_map.items():
+            if p.status != ExecutionStatus.SUCCESS or p.metrics.get("opacity_penalty"):
+                vote_table[key] = {
+                    "bias": p.directional_bias.value if p.status == ExecutionStatus.SUCCESS else "NEUTRAL",
+                    "confidence": p.confidence_score,
+                    "effective_weight": 0.0,
+                    "metrics": p.metrics
+                }
                 continue
+
             raw_conf = p.confidence_score
             discount = 1.0
             if key == "16_sentiment" and p_money.directional_bias == DirectionalBias.BEARISH and p.directional_bias == DirectionalBias.BULLISH:
