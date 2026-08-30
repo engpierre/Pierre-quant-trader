@@ -17,6 +17,8 @@ from typing import Any, Dict
 # Force UTF-8 output on Windows console
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if sys.platform == "win32" and hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 # --- ENVIRONMENT & SITE-PACKAGES INJECTION HOOK ---
 VENV_PYTHON = Path(r"C:\Users\Pierre\.openclaw\workspace\Julie-Core\.venv\Scripts\python.exe")
@@ -79,19 +81,29 @@ class SupervisorOrchestrator:
             cmd = [py_bin, str(script_path), "--ticker", ticker, "--json"]
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             if proc.returncode == 0 and proc.stdout.strip():
-                # Extract JSON substring if other stdout precedes it
+                # Extract valid JSON substring
                 stdout_clean = proc.stdout.strip()
                 json_start = stdout_clean.find("{")
                 json_end = stdout_clean.rfind("}")
                 if json_start != -1 and json_end != -1:
-                    return json.loads(stdout_clean[json_start : json_end + 1])
+                    parsed = json.loads(stdout_clean[json_start : json_end + 1])
+                    if isinstance(parsed, dict) and parsed.get("status") == "SUCCESS":
+                        return parsed
         except Exception as e:
             logger.error(f"Failed CLI subprocess for {script_rel_path}: {e}")
         
-        # Fallback default payload
+        # Explicit data-opacity failure payload
         return {
-            "status": "FAILED", "directional_bias": "NEUTRAL", "confidence_score": 50.0,
-            "spot_price": 0.0, "metrics": {"forecast_delta_pct": 0.0}, "error_message": "Subprocess execution failure"
+            "status": "FAILED",
+            "directional_bias": "NEUTRAL",
+            "confidence_score": 50.0,
+            "spot_price": 0.0,
+            "metrics": {
+                "forecast_delta_pct": 0.0,
+                "opacity_penalty": True,
+                "execution_error": "Subprocess CLI exit failure"
+            },
+            "error_message": "Subprocess execution failure"
         }
 
     @classmethod
@@ -115,25 +127,42 @@ class SupervisorOrchestrator:
         p_sent = SentimentHarvesterAgent.harvest(clean_ticker)
         p_risk = PortfolioGuardAgent.calculate_stops(clean_ticker)
 
-        spot = res_timesfm.get("spot_price") or p_sentry.spot_price
+        spot = res_timesfm.get("spot_price") or res_chronos.get("spot_price") or p_sentry.spot_price
 
-        # 3. Predictive Divergence Engine
-        t_delta = res_timesfm.get("metrics", {}).get("forecast_delta_pct", 0.0)
-        c_delta = res_chronos.get("metrics", {}).get("forecast_delta_pct", 0.0)
-        pred_spread = round(t_delta - c_delta, 2)
+        # 3. Predictive Dual-Model Divergence Resolution
+        t_ok = res_timesfm.get("status") == "SUCCESS" and not res_timesfm.get("metrics", {}).get("opacity_penalty")
+        c_ok = res_chronos.get("status") == "SUCCESS" and not res_chronos.get("metrics", {}).get("opacity_penalty")
+
+        t_delta = res_timesfm.get("metrics", {}).get("forecast_delta_pct", 0.0) if t_ok else 0.0
+        c_delta = res_chronos.get("metrics", {}).get("forecast_delta_pct", 0.0) if c_ok else 0.0
+        pred_spread = round(t_delta - c_delta, 2) if (t_ok and c_ok) else (t_delta if t_ok else c_delta)
         
         t_bias = res_timesfm.get("directional_bias", "NEUTRAL")
         c_bias = res_chronos.get("directional_bias", "NEUTRAL")
-        is_pred_conflict = (t_bias != c_bias) or (abs(pred_spread) > 1.5)
-        pred_regime = "CONFLICTING_REGIME" if is_pred_conflict else "CONVERGENT_REGIME"
+
+        if t_ok and c_ok:
+            is_pred_conflict = (t_bias != c_bias) or (abs(pred_spread) > 1.5)
+            pred_regime = "CONFLICTING_REGIME" if is_pred_conflict else "CONVERGENT_REGIME"
+        else:
+            is_pred_conflict = False
+            pred_regime = "SINGLE_MODEL_OPACITY" if (t_ok or c_ok) else "PREDICTIVE_BLINDSPOT"
 
         # 4. Weighted Confluence Vote Engine
         bull_weight, bear_weight, total_weight = 0.0, 0.0, 0.0
         vote_table: Dict[str, Dict[str, Any]] = {}
 
-        # Ingest Predictive Payloads
-        for key, res in [("06a_timesfm", res_timesfm), ("06b_chronos", res_chronos)]:
-            raw_conf = res.get("confidence_score", 50.0)
+        # Ingest Predictive Payloads (Excluding failed / opacity penalty nodes from active denominator)
+        for key, res, is_valid in [("06a_timesfm", res_timesfm, t_ok), ("06b_chronos", res_chronos, c_ok)]:
+            if not is_valid:
+                vote_table[key] = {
+                    "bias": "NEUTRAL",
+                    "confidence": 50.0,
+                    "effective_weight": 0.0,
+                    "metrics": res.get("metrics", {"opacity_penalty": True})
+                }
+                continue
+
+            raw_conf = res.get("confidence_score", 80.0)
             discount = 0.80 if is_pred_conflict else 1.0
             eff_wt = raw_conf * discount
             total_weight += eff_wt
@@ -143,7 +172,10 @@ class SupervisorOrchestrator:
             elif bias_val == "BEARISH":
                 bear_weight += eff_wt
             vote_table[key] = {
-                "bias": bias_val, "confidence": raw_conf, "effective_weight": round(eff_wt, 2), "metrics": res.get("metrics", {})
+                "bias": bias_val,
+                "confidence": raw_conf,
+                "effective_weight": round(eff_wt, 2),
+                "metrics": res.get("metrics", {})
             }
 
         # Ingest Standard Analytical Nodes
@@ -167,7 +199,10 @@ class SupervisorOrchestrator:
             elif p.directional_bias == DirectionalBias.BEARISH:
                 bear_weight += eff_wt
             vote_table[key] = {
-                "bias": p.directional_bias.value, "confidence": raw_conf, "effective_weight": round(eff_wt, 2), "metrics": p.metrics
+                "bias": p.directional_bias.value,
+                "confidence": raw_conf,
+                "effective_weight": round(eff_wt, 2),
+                "metrics": p.metrics
             }
 
         net_confluence = round(((bull_weight - bear_weight) / total_weight * 100.0), 2) if total_weight > 0 else 0.0

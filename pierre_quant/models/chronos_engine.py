@@ -1,11 +1,12 @@
 """
 pierre_quant/models/chronos_engine.py
-Chronos-Bolt Forecasting Worker (cuda:1).
+Agent 06b: Amazon Chronos-Bolt Forecasting Worker (cuda:1).
 """
 from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -14,9 +15,15 @@ import pandas as pd
 import torch
 import yfinance as yf
 
+# Suppress noisy HuggingFace and HTTP logs
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 # Force UTF-8 output on Windows console
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if sys.platform == "win32" and hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 # Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -40,7 +47,7 @@ class ChronosForecastingAgent:
     DEVICE = "cuda:1" if torch.cuda.is_available() and torch.cuda.device_count() > 1 else ("cuda:0" if torch.cuda.is_available() else "cpu")
 
     @classmethod
-    def forecast(cls, ticker: str, period: str = "3mo") -> AgentExecutionPayload:
+    def forecast_trajectory(cls, ticker: str, period: str = "6mo") -> AgentExecutionPayload:
         clean_ticker = ticker.strip().upper().lstrip("$")
         feed_payload = LiveFeedIngestionAgent.fetch(clean_ticker, period=period, interval="1d")
         if feed_payload.status != ExecutionStatus.SUCCESS or not feed_payload.candles:
@@ -48,7 +55,7 @@ class ChronosForecastingAgent:
                 agent_id=cls.AGENT_ID,
                 ticker=clean_ticker,
                 status=ExecutionStatus.FAILED,
-                error_message=f"Agent 05 feed failed: {feed_payload.error_message}"
+                error_message=f"Agent 05 feed resolution failed: {feed_payload.error_message}"
             )
 
         closes = np.array([c.close for c in feed_payload.candles], dtype=np.float32)
@@ -73,7 +80,8 @@ class ChronosForecastingAgent:
             context = torch.tensor(closes, dtype=torch.float32)
             forecast = pipeline.predict(context, prediction_length=cls.HORIZON)
             mean_vector = [round(float(x), 4) for x in forecast[0].mean(dim=0)]
-        except Exception:
+        except Exception as exc:
+            logger.warning(f"Chronos inference exception, using robust autoregression: {exc}")
             # Deterministic momentum drift autoregression
             pct_trend = float((closes[-1] - closes[-16]) / closes[-16]) if len(closes) >= 16 else 0.012
             step = float(spot * pct_trend / cls.HORIZON)
@@ -104,3 +112,32 @@ class ChronosForecastingAgent:
                 "vector": mean_vector
             }
         )
+
+    @classmethod
+    def forecast(cls, ticker: str, **kwargs) -> AgentExecutionPayload:
+        return cls.forecast_trajectory(ticker, **kwargs)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Agent 06b: Chronos-Bolt Forecasting Worker CLI")
+    parser.add_argument("--ticker", type=str, required=True, help="Holding symbol to forecast")
+    parser.add_argument("--period", type=str, default="6mo", help="Lookback period")
+    parser.add_argument("--json", action="store_true", help="Output pure JSON")
+    args = parser.parse_args()
+
+    payload = ChronosForecastingAgent.forecast(args.ticker, period=args.period)
+
+    if args.json:
+        out = {
+            "agent_id": payload.agent_id,
+            "ticker": payload.ticker,
+            "status": payload.status.value,
+            "directional_bias": payload.directional_bias.value,
+            "confidence_score": payload.confidence_score,
+            "spot_price": payload.spot_price,
+            "metrics": payload.metrics,
+            "error_message": payload.error_message
+        }
+        print(json.dumps(out))
+    else:
+        print(f"Holding: {payload.ticker:<8} | Status: {payload.status.value:<7} | Spot: ${payload.spot_price:<9.2f} | End:${payload.metrics.get('terminal_price', 0):<9.2f} (Δ={payload.metrics.get('forecast_delta_pct', 0)}%) | Bias: {payload.directional_bias.value:<7} | Device: {payload.metrics.get('device', 'N/A')}")
