@@ -1,6 +1,6 @@
 """
 pierre_quant/orchestration/supervisor.py
-Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with Parallel IO.
+Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with Opportunistic Learning Hook.
 """
 from __future__ import annotations
 import argparse
@@ -48,6 +48,9 @@ from pierre_quant.analysis.sector_rotation import SectorRotationAgent
 from pierre_quant.macro.macro_tracker import MacroEnvironmentAgent
 from pierre_quant.sentiment.sentiment_harvester import SentimentHarvesterAgent
 from pierre_quant.risk.portfolio_guard import PortfolioGuardAgent
+from pierre_quant.learning.settlement_engine import (
+    run_opportunistic_settlement, record_forecast_batch
+)
 
 logging.basicConfig(level=logging.WARNING, format="[%(asctime)s] [%(levelname)s] %(message)s")
 logger = logging.getLogger("Agent01_Supervisor")
@@ -137,8 +140,10 @@ class SupervisorOrchestrator:
     def synthesize(cls, ticker: str) -> SupervisorSynthesisResult:
         clean_ticker = ticker.strip().upper().lstrip("$")
 
+        # 0. Opportunistic Learning & Calibration Hook (< 300ms)
+        dynamic_weights = run_opportunistic_settlement()
+
         # 1. Dispatch Concurrent Analytical Pipeline via ThreadPoolExecutor
-        tasks: Dict[str, Any] = {}
         with ThreadPoolExecutor(max_workers=12) as executor:
             # GPU Predictive Subprocesses (cuda:0 & cuda:1)
             future_tfm = executor.submit(cls._execute_cli_worker, "pierre_quant/models/timesfm_engine.py", clean_ticker)
@@ -219,7 +224,7 @@ class SupervisorOrchestrator:
         bull_weight, bear_weight, total_weight = 0.0, 0.0, 0.0
         vote_table: Dict[str, Dict[str, Any]] = {}
 
-        # Ingest Predictive Payloads (Excluding failed / opacity penalty nodes from active denominator)
+        # Ingest Predictive Payloads
         for key, res, is_valid in [("06a_timesfm", res_timesfm, t_ok), ("06b_chronos", res_chronos, c_ok)]:
             if not is_valid:
                 vote_table[key] = {
@@ -230,7 +235,8 @@ class SupervisorOrchestrator:
                 }
                 continue
 
-            raw_conf = res.get("confidence_score", 80.0)
+            base_conf = float(res.get("confidence_score", 80.0))
+            raw_conf = max(10.0, min(100.0, float(dynamic_weights.get(key, base_conf))))
             discount = 0.80 if is_pred_conflict else 1.0
             eff_wt = raw_conf * discount
             total_weight += eff_wt
@@ -263,7 +269,8 @@ class SupervisorOrchestrator:
                 }
                 continue
 
-            raw_conf = p.confidence_score
+            base_conf = float(p.confidence_score)
+            raw_conf = max(10.0, min(100.0, float(dynamic_weights.get(key, base_conf))))
             discount = 1.0
             if key == "16_sentiment" and p_money.directional_bias == DirectionalBias.BEARISH and p.directional_bias == DirectionalBias.BULLISH:
                 discount *= 0.50
@@ -293,6 +300,9 @@ class SupervisorOrchestrator:
             directive = "HOLD INERTIA / AVOID SIZE EXPANSION"
 
         invalidation_floor = p_risk.metrics.get("proposed_stop") or p_risk.metrics.get("invalidation_floor") or p_sentry.metrics.get("nearest_support", 0.0)
+
+        # 4. Record live forecast batch to SQLite DAG for future settlement
+        record_forecast_batch(clean_ticker, spot, vote_table, horizon_bars=16)
 
         return SupervisorSynthesisResult(
             ticker=clean_ticker, spot_price=spot, consensus_bias=consensus,
