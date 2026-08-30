@@ -1,6 +1,6 @@
 """
 pierre_quant/orchestration/supervisor.py
-Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with High-Speed Neural Caching.
+Agent 01 (Supervisor Orchestrator) - Master Confluence Engine with Regime-Conditioned Weight Matrix.
 """
 from __future__ import annotations
 import argparse
@@ -51,7 +51,11 @@ from pierre_quant.macro.macro_tracker import MacroEnvironmentAgent
 from pierre_quant.sentiment.sentiment_harvester import SentimentHarvesterAgent
 from pierre_quant.risk.portfolio_guard import PortfolioGuardAgent
 from pierre_quant.learning.settlement_engine import (
-    run_opportunistic_settlement, record_forecast_batch
+    run_opportunistic_settlement,
+    record_forecast_batch,
+    classify_market_regime,
+    get_regime_weights,
+    MarketRegime
 )
 
 logging.basicConfig(level=logging.WARNING, format="[%(asctime)s] [%(levelname)s] %(message)s")
@@ -108,13 +112,11 @@ class SupervisorOrchestrator:
     def synthesize(cls, ticker: str) -> SupervisorSynthesisResult:
         clean_ticker = ticker.strip().upper().lstrip("$")
 
-        # 0. Opportunistic Learning & Calibration Hook (< 300ms)
-        dynamic_weights = run_opportunistic_settlement()
+        # 0. Pre-Flight Opportunistic Learning & Settlement (< 250ms)
+        run_opportunistic_settlement()
 
         # 1. Dispatch Concurrent Analytical Pipeline via ThreadPoolExecutor
-        tasks: Dict[str, Any] = {}
         with ThreadPoolExecutor(max_workers=12) as executor:
-            # GPU Predictive & Quantitative Group
             future_tfm = executor.submit(cls._safe_execute_node, "06a_timesfm", clean_ticker, TimesFMForecastingAgent.forecast, clean_ticker)
             future_chr = executor.submit(cls._safe_execute_node, "06b_chronos", clean_ticker, ChronosForecastingAgent.forecast, clean_ticker)
             future_stat = executor.submit(cls._safe_execute_node, "07_stat_invariance", clean_ticker, StatisticalInvarianceAgent.analyze, clean_ticker)
@@ -160,7 +162,18 @@ class SupervisorOrchestrator:
 
         spot = p_tfm.spot_price or p_chr.spot_price or p_sentry.spot_price
 
-        # 2. Predictive Dual-Model Divergence Resolution
+        # 2. Prevailing Regime Classification & Dynamic Weight Resolution
+        z_score = float(p_stat.metrics.get("z_score", 0.0))
+        roc_10 = float(p_mom.metrics.get("roc_10", 0.0))
+        vwap_delta = float(p_sentry.metrics.get("vwap_delta_pct", 0.0))
+        macro_state = str(p_macro.metrics.get("macro_regime", ""))
+
+        active_regime = classify_market_regime(
+            z_score=z_score, roc_10=roc_10, vwap_delta_pct=vwap_delta, macro_regime=macro_state
+        )
+        regime_weights = get_regime_weights(active_regime)
+
+        # 3. Predictive Dual-Model Divergence Resolution
         t_ok = p_tfm.status == ExecutionStatus.SUCCESS and not p_tfm.metrics.get("opacity_penalty")
         c_ok = p_chr.status == ExecutionStatus.SUCCESS and not p_chr.metrics.get("opacity_penalty")
 
@@ -178,7 +191,7 @@ class SupervisorOrchestrator:
             is_pred_conflict = False
             pred_regime = "SINGLE_MODEL_OPACITY" if (t_ok or c_ok) else "PREDICTIVE_BLINDSPOT"
 
-        # 3. Weighted Confluence Vote Engine
+        # 4. Regime-Conditioned Weighted Confluence Vote Engine
         bull_weight, bear_weight, total_weight = 0.0, 0.0, 0.0
         vote_table: Dict[str, Dict[str, Any]] = {}
 
@@ -194,7 +207,7 @@ class SupervisorOrchestrator:
                 continue
 
             base_conf = float(p.confidence_score)
-            raw_conf = max(10.0, min(100.0, float(dynamic_weights.get(key, base_conf))))
+            raw_conf = max(10.0, min(100.0, float(regime_weights.get(key, base_conf))))
             discount = 0.80 if is_pred_conflict else 1.0
             eff_wt = raw_conf * discount
             total_weight += eff_wt
@@ -227,7 +240,7 @@ class SupervisorOrchestrator:
                 continue
 
             base_conf = float(p.confidence_score)
-            raw_conf = max(10.0, min(100.0, float(dynamic_weights.get(key, base_conf))))
+            raw_conf = max(10.0, min(100.0, float(regime_weights.get(key, base_conf))))
             discount = 1.0
             if key == "16_sentiment" and p_money.directional_bias == DirectionalBias.BEARISH and p.directional_bias == DirectionalBias.BULLISH:
                 discount *= 0.50
@@ -258,8 +271,8 @@ class SupervisorOrchestrator:
 
         invalidation_floor = p_risk.metrics.get("proposed_stop") or p_risk.metrics.get("invalidation_floor") or p_sentry.metrics.get("nearest_support", 0.0)
 
-        # 4. Record live forecast batch to SQLite DAG
-        record_forecast_batch(clean_ticker, spot, vote_table, horizon_bars=16)
+        # 5. Record live forecast batch conditioned on active market regime
+        record_forecast_batch(clean_ticker, spot, vote_table, horizon_bars=16, market_regime=active_regime)
 
         return SupervisorSynthesisResult(
             ticker=clean_ticker, spot_price=spot, consensus_bias=consensus,

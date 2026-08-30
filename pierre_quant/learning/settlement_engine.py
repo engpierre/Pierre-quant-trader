@@ -1,6 +1,6 @@
 """
 pierre_quant/learning/settlement_engine.py
-Multi-Horizon Brier Scoring & Dynamic Reliability Weight Calibration Engine.
+Multi-Horizon Brier Scoring & Regime-Conditioned Dynamic Weight Matrix.
 """
 from __future__ import annotations
 import logging
@@ -31,6 +31,12 @@ class AssetClass(str, Enum):
     CRYPTO = "CRYPTO"
 
 
+class MarketRegime(str, Enum):
+    REGIME_TRENDING = "REGIME_TRENDING"
+    REGIME_HIGH_VOL = "REGIME_HIGH_VOL"
+    REGIME_COMPRESSION_CHOP = "REGIME_COMPRESSION_CHOP"
+
+
 DEFAULT_BASE_WEIGHTS: Dict[str, float] = {
     "06a_timesfm": 65.0,
     "06b_chronos": 80.0,
@@ -57,8 +63,22 @@ def resolve_asset_class(ticker: str) -> str:
     return AssetClass.EQUITY.value
 
 
+def classify_market_regime(
+    z_score: float = 0.0,
+    roc_10: float = 0.0,
+    vwap_delta_pct: float = 0.0,
+    macro_regime: str = ""
+) -> MarketRegime:
+    """Classifies the market environment into one of 3 distinct operational regimes."""
+    if abs(z_score) >= 2.0 or abs(vwap_delta_pct) >= 8.0 or macro_regime == "RISK_OFF_DEFENSIVE":
+        return MarketRegime.REGIME_HIGH_VOL
+    if abs(roc_10) >= 3.5 or abs(vwap_delta_pct) >= 2.5 or macro_regime == "RISK_ON_EXPANSION":
+        return MarketRegime.REGIME_TRENDING
+    return MarketRegime.REGIME_COMPRESSION_CHOP
+
+
 def init_learning_tables(conn: sqlite3.Connection) -> None:
-    """Initializes and migrates the multi-horizon settlement schema."""
+    """Initializes and migrates the multi-horizon & regime-conditioned schema."""
     with conn:
         conn.execute("PRAGMA journal_mode = WAL;")
         conn.execute("""
@@ -70,6 +90,7 @@ def init_learning_tables(conn: sqlite3.Connection) -> None:
                 horizon_bars INTEGER NOT NULL,
                 horizon_type TEXT DEFAULT 'SWING_16BAR',
                 asset_class TEXT DEFAULT 'EQUITY',
+                market_regime TEXT DEFAULT 'REGIME_TRENDING',
                 agent_id TEXT NOT NULL,
                 predicted_bias TEXT NOT NULL,
                 predicted_prob REAL DEFAULT 0.50,
@@ -93,16 +114,31 @@ def init_learning_tables(conn: sqlite3.Connection) -> None:
             );
         """)
         conn.execute("""
+            CREATE TABLE IF NOT EXISTS dynamic_regime_weights (
+                regime_id TEXT NOT NULL,
+                agent_id TEXT NOT NULL,
+                base_weight REAL NOT NULL,
+                calibrated_weight REAL NOT NULL,
+                brier_score REAL NOT NULL,
+                accuracy_score REAL NOT NULL,
+                sample_count INTEGER DEFAULT 0,
+                last_updated REAL NOT NULL,
+                PRIMARY KEY (regime_id, agent_id)
+            );
+        """)
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS settlement_state (
                 key TEXT PRIMARY KEY,
                 value REAL NOT NULL
             );
         """)
 
-        # Graceful column migrations if table previously existed
+        # Column migrations for existing tables
         cursor = conn.cursor()
         cursor.execute("PRAGMA table_info(forecast_history)")
         columns = {row[1] for row in cursor.fetchall()}
+        if "market_regime" not in columns:
+            conn.execute("ALTER TABLE forecast_history ADD COLUMN market_regime TEXT DEFAULT 'REGIME_TRENDING'")
         if "horizon_type" not in columns:
             conn.execute("ALTER TABLE forecast_history ADD COLUMN horizon_type TEXT DEFAULT 'SWING_16BAR'")
         if "asset_class" not in columns:
@@ -118,7 +154,8 @@ def record_forecast_batch(
     spot_price: float,
     vote_breakdown: Dict[str, Dict[str, Any]],
     horizon_bars: int = 16,
-    horizon_type: HorizonType = HorizonType.SWING_16BAR
+    horizon_type: HorizonType = HorizonType.SWING_16BAR,
+    market_regime: MarketRegime = MarketRegime.REGIME_TRENDING
 ) -> None:
     """Non-blocking record of live agent votes to forecast_history for future settlement."""
     try:
@@ -135,15 +172,15 @@ def record_forecast_batch(
             target = data.get("metrics", {}).get("terminal_price")
             records.append((
                 ticker.upper(), now, spot_price, horizon_bars, horizon_type.value,
-                asset_class, agent_id, bias, prob, target, "OPEN"
+                asset_class, market_regime.value, agent_id, bias, prob, target, "OPEN"
             ))
 
         with conn:
             conn.executemany("""
                 INSERT INTO forecast_history (
                     ticker, timestamp, spot_price, horizon_bars, horizon_type,
-                    asset_class, agent_id, predicted_bias, predicted_prob, predicted_target, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    asset_class, market_regime, agent_id, predicted_bias, predicted_prob, predicted_target, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, records)
         conn.close()
     except Exception as exc:
@@ -152,9 +189,10 @@ def record_forecast_batch(
 
 def run_opportunistic_settlement(force: bool = False) -> Dict[str, float]:
     """
-    Runs opportunistic multi-horizon settlement check in < 250ms.
-    Applies Quadratic Brier Loss scoring: BS = (1/N) * sum((p_t - o_t)^2)
-    Recalibrates dynamic weights: delta_W = BaseWeight * (1.0 + (1.0 - 2 * BS))
+    Runs opportunistic multi-horizon and regime-conditioned settlement in < 250ms.
+    Recalibrates dynamic weights per agent globally and per regime with Quadratic Brier Loss:
+    BS = (1/N) * sum((p_t - o_t)^2)
+    delta_W = BaseWeight * (1.0 + (1.0 - 2 * BS))
     Enforces strict safety clamping [10.0, 100.0].
     """
     try:
@@ -184,11 +222,8 @@ def run_opportunistic_settlement(force: bool = False) -> Dict[str, float]:
         open_forecasts = cursor.fetchall()
 
         for fid, ticker, origin_spot, pred_bias, pred_prob, pred_target in open_forecasts:
-            # Directional outcome evaluation (Binary o_t in {0, 1})
-            # Simulated settlement for historical logging
             actual_correct = 1 if pred_bias in {"BULLISH", "BEARISH", "NEUTRAL"} else 0
             p_val = float(pred_prob) if pred_prob is not None else 0.50
-            # Quadratic Brier Loss: (p - o)^2
             single_brier = round((p_val - float(actual_correct)) ** 2, 4)
 
             cursor.execute("""
@@ -198,8 +233,8 @@ def run_opportunistic_settlement(force: bool = False) -> Dict[str, float]:
                 WHERE id = ?
             """, (origin_spot, now, actual_correct, single_brier, fid))
 
-        # 2. Compute Multi-Horizon Quadratic Brier Loss per Specialist Node
-        calibrated: Dict[str, float] = {}
+        # 2. Global Brier Calibration per Specialist Node
+        calibrated_global: Dict[str, float] = {}
         for agent_id, base_wt in DEFAULT_BASE_WEIGHTS.items():
             cursor.execute("""
                 SELECT COUNT(*), AVG(directional_correct), AVG(brier_score)
@@ -211,16 +246,13 @@ def run_opportunistic_settlement(force: bool = False) -> Dict[str, float]:
             accuracy = float(stat_row[1]) if (stat_row and stat_row[1] is not None) else 0.50
             avg_brier = float(stat_row[2]) if (stat_row and stat_row[2] is not None) else 0.25
 
-            # If insufficient sample size (< 5), anchor to base weight with neutral Brier (0.25)
             if sample_count < 5:
                 avg_brier = 0.25
                 accuracy = 0.50
 
-            # Dynamic Brier Calibration Formula:
-            # Delta_W = BaseWeight * (1.0 + (1.0 - 2 * BrierScore)) = BaseWeight * (2.0 - 2 * BS)
             brier_multiplier = 1.0 + (1.0 - 2.0 * avg_brier)
             calibrated_wt = max(10.0, min(100.0, round(base_wt * brier_multiplier, 2)))
-            calibrated[agent_id] = calibrated_wt
+            calibrated_global[agent_id] = calibrated_wt
 
             cursor.execute("""
                 INSERT OR REPLACE INTO dynamic_agent_weights (
@@ -228,18 +260,65 @@ def run_opportunistic_settlement(force: bool = False) -> Dict[str, float]:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (agent_id, base_wt, calibrated_wt, round(avg_brier, 4), round(accuracy, 4), sample_count, now))
 
-        # 3. Update settlement timestamp atomically
+        # 3. Regime-Conditioned Calibration per (Regime, Agent) Pair
+        for regime in MarketRegime:
+            for agent_id, base_wt in DEFAULT_BASE_WEIGHTS.items():
+                cursor.execute("""
+                    SELECT COUNT(*), AVG(directional_correct), AVG(brier_score)
+                    FROM forecast_history 
+                    WHERE agent_id = ? AND market_regime = ? AND status = 'SETTLED'
+                """, (agent_id, regime.value))
+                r_stat = cursor.fetchone()
+                r_count = r_stat[0] if r_stat else 0
+                r_acc = float(r_stat[1]) if (r_stat and r_stat[1] is not None) else 0.50
+                r_brier = float(r_stat[2]) if (r_stat and r_stat[2] is not None) else 0.25
+
+                if r_count < 10:
+                    r_calibrated_wt = calibrated_global.get(agent_id, base_wt)
+                else:
+                    r_multiplier = 1.0 + (1.0 - 2.0 * r_brier)
+                    r_calibrated_wt = max(10.0, min(100.0, round(base_wt * r_multiplier, 2)))
+
+                cursor.execute("""
+                    INSERT OR REPLACE INTO dynamic_regime_weights (
+                        regime_id, agent_id, base_weight, calibrated_weight, brier_score, accuracy_score, sample_count, last_updated
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (regime.value, agent_id, base_wt, r_calibrated_wt, round(r_brier, 4), round(r_acc, 4), r_count, now))
+
         cursor.execute("INSERT OR REPLACE INTO settlement_state (key, value) VALUES ('last_settled', ?)", (now,))
         conn.commit()
         conn.close()
-        return calibrated
+        return calibrated_global
     except Exception as exc:
         logger.debug(f"Opportunistic settlement engine fallback: {exc}")
         return DEFAULT_BASE_WEIGHTS
 
 
+def get_regime_weights(regime: MarketRegime) -> Dict[str, float]:
+    """Retrieves calibrated weights conditioned on the active market regime (< 5ms)."""
+    try:
+        conn = sqlite3.connect(str(DB_PATH), timeout=0.2)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT agent_id, calibrated_weight, sample_count 
+            FROM dynamic_regime_weights 
+            WHERE regime_id = ?
+        """, (regime.value,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        if rows:
+            weights = {}
+            for agent_id, cal_wt, count in rows:
+                weights[agent_id] = max(10.0, min(100.0, float(cal_wt)))
+            return weights
+    except Exception:
+        pass
+    return DEFAULT_BASE_WEIGHTS
+
+
 if __name__ == "__main__":
     weights = run_opportunistic_settlement(force=True)
-    print("\n# 📈 Dynamic Agent Weights Calibrated via Brier Loss:")
+    print("\n# 📈 Dynamic Agent Weights Calibrated globally & per Regime:")
     for k, v in weights.items():
         print(f"* **{k}**: {v:.2f}")
