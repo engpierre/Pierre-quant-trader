@@ -1,6 +1,6 @@
 """
 pierre_quant/risk/portfolio_guard.py
-Agent 02 (Risk & Portfolio Guard) - Dynamic Monotonic ATR Stop-Loss & Risk Engine.
+Agent 02 (Risk & Portfolio Guard) - Canonical Ingestion Binding & Dynamic ATR Stop Engine.
 """
 from __future__ import annotations
 import logging
@@ -18,8 +18,9 @@ from pierre_quant.ingestion.live_feed import LiveFeedIngestionAgent
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)s] %(message)s")
 logger = logging.getLogger("Agent02_RiskGuard")
 
+# Canonical Workspace Ledger Path
 WORKSPACE_ROOT = Path(r"C:\Users\Pierre\.openclaw\workspace")
-DB_PATH = Path(r"C:\Users\Pierre\.openclaw\pierre_quant.db")
+DB_PATH = WORKSPACE_ROOT / "pierre-quant" / "pierre_quant.db"
 
 class RiskGuardAgent:
     """Agent 02: Enforces monotonic volatility stops and capital defense invariants."""
@@ -53,8 +54,12 @@ class RiskGuardAgent:
     ) -> AgentExecutionPayload:
         clean_ticker = ticker.strip().upper().lstrip("$")
         
-        # 1. Fetch live candles via Agent 05 Employee Contract
-        feed_payload = LiveFeedIngestionAgent.fetch(clean_ticker, period="3mo", interval="1d")
+        # 1. Canonical invocation of Agent 05 Employee Contract
+        if hasattr(LiveFeedIngestionAgent, "fetch_spot_and_candles"):
+            feed_payload = LiveFeedIngestionAgent.fetch_spot_and_candles(clean_ticker, period="3mo", interval="1d")
+        else:
+            feed_payload = LiveFeedIngestionAgent.fetch(clean_ticker, period="3mo", interval="1d")
+
         if feed_payload.status != ExecutionStatus.SUCCESS or not feed_payload.candles:
             return AgentExecutionPayload(
                 agent_id=cls.AGENT_ID,
@@ -73,7 +78,6 @@ class RiskGuardAgent:
         atr_buffer = cls.ATR_MULTIPLIER * atr if atr > 0 else (spot * 0.05)
         raw_floor = spot - atr_buffer
 
-        # Calculate standard return and standard deviation bands
         gain_pct = ((spot - cost_basis) / cost_basis) * 100.0 if cost_basis > 0 else 0.0
         rolling_std = float(c_df["Close"].pct_change().rolling(20).std().iloc[-1]) if len(c_df) >= 20 else 0.02
         sigma_1_0 = rolling_std * cost_basis * 100.0
@@ -83,22 +87,17 @@ class RiskGuardAgent:
         ratchet_phase = "BASE"
 
         if spot >= cost_basis + (2.5 * sigma_1_0):
-            # Phase 3 Ratchet: Lock +1.5 sigma
             proposed_stop = max(current_stop, cost_basis + (1.5 * sigma_1_0))
             ratchet_phase = "PHASE_3_PROFIT_LOCK"
         elif spot >= cost_basis + (1.5 * sigma_1_0):
-            # Phase 2 Ratchet: Lock +0.75 sigma
             proposed_stop = max(current_stop, cost_basis + (0.75 * sigma_1_0))
             ratchet_phase = "PHASE_2_EXPANSION"
         elif spot >= cost_basis + (1.0 * sigma_1_0):
-            # Phase 1 Ratchet: Move to Breakeven
             proposed_stop = max(current_stop, cost_basis)
             ratchet_phase = "PHASE_1_BREAKEVEN"
         else:
-            # Base dynamic ATR floor
             proposed_stop = max(current_stop, raw_floor)
 
-        # Monotonic Invariant Enforcement
         final_stop = max(current_stop, proposed_stop)
         stop_breached = spot <= final_stop
 
@@ -125,7 +124,7 @@ class RiskGuardAgent:
             }
         )
 
-    # Resilient Employee Aliases
+    # Convenience Aliases
     @classmethod
     def evaluate(cls, ticker: str, cost_basis: float, current_stop: float) -> AgentExecutionPayload:
         return cls.evaluate_position_risk(ticker, cost_basis, current_stop)
