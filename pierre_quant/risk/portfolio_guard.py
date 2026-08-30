@@ -78,22 +78,23 @@ class RiskGuardAgent:
         atr_buffer = cls.ATR_MULTIPLIER * atr if atr > 0 else (spot * 0.05)
         raw_floor = spot - atr_buffer
 
-        gain_pct = ((spot - cost_basis) / cost_basis) * 100.0 if cost_basis > 0 else 0.0
+        eff_cost_basis = cost_basis if cost_basis > 0 else spot
+        gain_pct = ((spot - eff_cost_basis) / eff_cost_basis) * 100.0 if eff_cost_basis > 0 else 0.0
         rolling_std = float(c_df["Close"].pct_change().rolling(20).std().iloc[-1]) if len(c_df) >= 20 else 0.02
-        sigma_1_0 = rolling_std * cost_basis * 100.0
+        sigma_1_0 = rolling_std * eff_cost_basis * 100.0
 
         # Monotonic Ratchet Rules (Stop can only ascend)
         proposed_stop = current_stop
         ratchet_phase = "BASE"
 
-        if spot >= cost_basis + (2.5 * sigma_1_0):
-            proposed_stop = max(current_stop, cost_basis + (1.5 * sigma_1_0))
+        if cost_basis > 0 and spot >= eff_cost_basis + (2.5 * sigma_1_0):
+            proposed_stop = max(current_stop, eff_cost_basis + (1.5 * sigma_1_0))
             ratchet_phase = "PHASE_3_PROFIT_LOCK"
-        elif spot >= cost_basis + (1.5 * sigma_1_0):
-            proposed_stop = max(current_stop, cost_basis + (0.75 * sigma_1_0))
+        elif cost_basis > 0 and spot >= eff_cost_basis + (1.5 * sigma_1_0):
+            proposed_stop = max(current_stop, eff_cost_basis + (0.75 * sigma_1_0))
             ratchet_phase = "PHASE_2_EXPANSION"
-        elif spot >= cost_basis + (1.0 * sigma_1_0):
-            proposed_stop = max(current_stop, cost_basis)
+        elif cost_basis > 0 and spot >= eff_cost_basis + (1.0 * sigma_1_0):
+            proposed_stop = max(current_stop, eff_cost_basis)
             ratchet_phase = "PHASE_1_BREAKEVEN"
         else:
             proposed_stop = max(current_stop, raw_floor)
@@ -126,10 +127,17 @@ class RiskGuardAgent:
 
     # Convenience Aliases
     @classmethod
-    def evaluate(cls, ticker: str, cost_basis: float, current_stop: float) -> AgentExecutionPayload:
+    def evaluate(cls, ticker: str, cost_basis: float = 0.0, current_stop: float = 0.0) -> AgentExecutionPayload:
         return cls.evaluate_position_risk(ticker, cost_basis, current_stop)
 
     @classmethod
-    def get_stop_floor(cls, ticker: str, cost_basis: float, current_stop: float) -> float:
+    def calculate_stops(cls, ticker: str, cost_basis: float = 0.0, current_stop: float = 0.0) -> AgentExecutionPayload:
+        return cls.evaluate_position_risk(ticker, cost_basis, current_stop)
+
+    @classmethod
+    def get_stop_floor(cls, ticker: str, cost_basis: float = 0.0, current_stop: float = 0.0) -> float:
         payload = cls.evaluate_position_risk(ticker, cost_basis, current_stop)
         return payload.metrics.get("proposed_stop", current_stop) if payload.status == ExecutionStatus.SUCCESS else current_stop
+
+# Canonical Alias
+PortfolioGuardAgent = RiskGuardAgent
