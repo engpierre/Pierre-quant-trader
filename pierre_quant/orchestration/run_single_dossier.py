@@ -1,7 +1,8 @@
 """
 pierre_quant/orchestration/run_single_dossier.py
-Direct CLI harness that generates and prints the pre-formatted Markdown Dossier.
+Dedicated CLI entry point rendering the complete Target Deep-Dive Dossier schema.
 """
+from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
@@ -24,47 +25,48 @@ if PROJECT_ROOT.exists() and str(PROJECT_ROOT) not in sys.path:
 from pierre_quant.orchestration.supervisor import SupervisorOrchestrator
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Generate Target Deep-Dive Dossier Markdown")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run Complete Target Deep-Dive Dossier")
     parser.add_argument("--ticker", type=str, required=True, help="Ticker symbol to synthesize")
     args = parser.parse_args()
 
-    res = SupervisorOrchestrator.synthesize(args.ticker)
+    clean_ticker = args.ticker.strip().upper().lstrip("$")
+    res = SupervisorOrchestrator.synthesize(clean_ticker)
 
-    # Format Markdown directly in Python
-    markdown_output = f"""# 🎯 Target Deep-Dive Dossier: ${res.ticker}
+    # Section 1: Header & Spot
+    lines = [
+        f"# 🎯 Target Deep-Dive Dossier: ${res.ticker}\n",
+        "### 1. Target Symbol & Spot Price",
+        f"* **Symbol:** `{res.ticker}`",
+        f"* **Spot Price:** `${res.spot_price:.2f}`\n",
+        "---",
+        "### 2. Consensus Bias & Predictive Regime",
+        f"* **Consensus Bias:** `{res.consensus_bias.value}`",
+        f"* **Confluence Score:** `{res.net_confluence_score:+5.2f}%`",
+        f"* **Dual-Predictive Spread Regime:** `{res.predictive_spread_pct:+5.2f}%` ({res.predictive_regime})",
+        f"* **Action Directive:** **`{res.action_directive}`**\n",
+        "---",
+        "### 3. Quant & Structural Vectors",
+        "| Agent | Bias | Raw Conf | Eff Wt | Key Metric Summary |",
+        "| :--- | :--- | :--- | :--- | :--- |"
+    ]
 
-### 1. Target Symbol & Spot Price
-* **Symbol:** `{res.ticker}`
-* **Spot Price:** `${res.spot_price:.2f}`
-
----
-
-### 2. Consensus Bias & Predictive Regime
-* **Consensus Bias:** `{res.consensus_bias.value}`
-* **Net Confluence Score:** `{res.net_confluence_score:+5.2f}%`
-* **Dual-Predictive Spread Regime:** `{res.predictive_spread_pct:+5.2f}%` ({res.predictive_regime})
-* **Action Directive:** **`{res.action_directive}`**
-
----
-
-### 3. Quant & Structural Vectors
-| Agent / Discipline | Bias Flag | Confidence | Effective Wt | Metric Summary |
-| :--- | :--- | :--- | :--- | :--- |"""
-
+    # Section 3: Full 12-Node Analytical Matrix
     for node, data in res.vote_breakdown.items():
-        metrics_str = str(data.get("metrics", {}))[:45].replace("|", "/")
-        markdown_output += f"\n| **{node}** | `{data['bias']}` | {data['confidence']:.1f}% | {data['effective_weight']:.1f} | `{metrics_str}` |"
+        metrics_clean = str(data.get("metrics", {}))[:55].replace("|", "/")
+        lines.append(
+            f"| **{node}** | `{data['bias']}` | {data['confidence']:.1f}% | {data['effective_weight']:.1f} | `{metrics_clean}` |"
+        )
 
-    markdown_output += f"""
+    # Section 4 & 5: Overlays & Invalidation Floor
+    lines.extend([
+        "\n---",
+        "### 4. Dynamic Invalidation Floor (Agent 02)",
+        f"* **🛡️ Risk Stop Floor (ATR):** `${res.risk_invalidation_floor:.2f}`\n"
+    ])
 
----
-
-### 4. Dynamic Invalidation Floor (Agent 02)
-* **🛡️ Risk Stop Floor:** `${res.risk_invalidation_floor:.2f}`
-"""
-
-    print(markdown_output)
+    # Print directly to stdout
+    print("\n".join(lines))
 
 
 if __name__ == "__main__":
