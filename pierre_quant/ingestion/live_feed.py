@@ -17,7 +17,7 @@ from pierre_quant.core.agent_contract import (
 logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(levelname)s] %(message)s")
 logger = logging.getLogger("Agent05_LiveFeed")
 
-TICKER_REGEX = re.compile(r"^[A-Z0-9.\-=]{1,10}$")
+TICKER_REGEX = re.compile(r"^[\^A-Z0-9.\-=]{1,12}$")
 
 class LiveFeedIngestionAgent:
     """Agent 05: Deterministic market feed provider with strict validation and shorthand aliases."""
