@@ -1,6 +1,6 @@
 """
 pierre_quant/orchestration/supervisor.py
-Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with Opportunistic Learning Hook.
+Agent 01 (Supervisor Orchestrator) - Master Multi-Agent Confluence Engine with High-Speed Neural Caching.
 """
 from __future__ import annotations
 import argparse
@@ -37,6 +37,8 @@ if PROJECT_ROOT.exists() and str(PROJECT_ROOT) not in sys.path:
 from pierre_quant.core.agent_contract import (
     AgentExecutionPayload, DirectionalBias, ExecutionStatus
 )
+from pierre_quant.models.timesfm_engine import TimesFMForecastingAgent
+from pierre_quant.forecasting.chronos_agent import ChronosForecastingAgent
 from pierre_quant.analysis.statistical_invariance import StatisticalInvarianceAgent
 from pierre_quant.analysis.momentum_vector import MomentumVectorAgent
 from pierre_quant.analysis.visual_sentry import VisualSentryAgent
@@ -77,41 +79,7 @@ class SupervisorSynthesisResult:
 
 class SupervisorOrchestrator:
     AGENT_ID = "01_supervisor_orchestrator"
-    NODE_TIMEOUT_SECONDS = 10.0
-
-    @classmethod
-    def _execute_cli_worker(cls, script_rel_path: str, ticker: str) -> Dict[str, Any]:
-        """Runs heavy PyTorch predictive engines via isolated CLI subprocess to prevent sandbox import crashes."""
-        py_bin = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
-        script_path = PROJECT_ROOT / script_rel_path
-        
-        try:
-            cmd = [py_bin, str(script_path), "--ticker", ticker, "--json"]
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=cls.NODE_TIMEOUT_SECONDS)
-            if proc.returncode == 0 and proc.stdout.strip():
-                stdout_clean = proc.stdout.strip()
-                json_start = stdout_clean.find("{")
-                json_end = stdout_clean.rfind("}")
-                if json_start != -1 and json_end != -1:
-                    parsed = json.loads(stdout_clean[json_start : json_end + 1])
-                    if isinstance(parsed, dict) and parsed.get("status") == "SUCCESS":
-                        return parsed
-        except Exception as e:
-            logger.error(f"Failed CLI subprocess for {script_rel_path}: {e}")
-        
-        # Explicit data-opacity failure payload
-        return {
-            "status": "FAILED",
-            "directional_bias": "NEUTRAL",
-            "confidence_score": 50.0,
-            "spot_price": 0.0,
-            "metrics": {
-                "forecast_delta_pct": 0.0,
-                "opacity_penalty": True,
-                "execution_error": "Subprocess CLI exit failure"
-            },
-            "error_message": "Subprocess execution failure"
-        }
+    NODE_TIMEOUT_SECONDS = 5.0
 
     @classmethod
     def _safe_execute_node(cls, node_key: str, ticker: str, fn: Callable[..., Any], *args, **kwargs) -> Tuple[str, Any]:
@@ -144,12 +112,11 @@ class SupervisorOrchestrator:
         dynamic_weights = run_opportunistic_settlement()
 
         # 1. Dispatch Concurrent Analytical Pipeline via ThreadPoolExecutor
+        tasks: Dict[str, Any] = {}
         with ThreadPoolExecutor(max_workers=12) as executor:
-            # GPU Predictive Subprocesses (cuda:0 & cuda:1)
-            future_tfm = executor.submit(cls._execute_cli_worker, "pierre_quant/models/timesfm_engine.py", clean_ticker)
-            future_chr = executor.submit(cls._execute_cli_worker, "pierre_quant/models/chronos_engine.py", clean_ticker)
-
-            # Parallel Network & Analytical Workers
+            # GPU Predictive & Quantitative Group
+            future_tfm = executor.submit(cls._safe_execute_node, "06a_timesfm", clean_ticker, TimesFMForecastingAgent.forecast, clean_ticker)
+            future_chr = executor.submit(cls._safe_execute_node, "06b_chronos", clean_ticker, ChronosForecastingAgent.forecast, clean_ticker)
             future_stat = executor.submit(cls._safe_execute_node, "07_stat_invariance", clean_ticker, StatisticalInvarianceAgent.analyze, clean_ticker)
             future_mom = executor.submit(cls._safe_execute_node, "08_momentum", clean_ticker, MomentumVectorAgent.analyze, clean_ticker)
             future_sentry = executor.submit(cls._safe_execute_node, "09_visual_sentry", clean_ticker, VisualSentryAgent.analyze, clean_ticker)
@@ -162,32 +129,23 @@ class SupervisorOrchestrator:
             future_sent = executor.submit(cls._safe_execute_node, "16_sentiment", clean_ticker, SentimentHarvesterAgent.harvest, clean_ticker)
             future_risk = executor.submit(cls._safe_execute_node, "02_risk", clean_ticker, PortfolioGuardAgent.calculate_stops, clean_ticker)
 
-            # Collect GPU Predictive Results with timeout
-            try:
-                res_timesfm = future_tfm.result(timeout=cls.NODE_TIMEOUT_SECONDS)
-            except Exception:
-                res_timesfm = {"status": "FAILED", "directional_bias": "NEUTRAL", "confidence_score": 50.0, "spot_price": 0.0, "metrics": {"forecast_delta_pct": 0.0, "opacity_penalty": True}}
-
-            try:
-                res_chronos = future_chr.result(timeout=cls.NODE_TIMEOUT_SECONDS)
-            except Exception:
-                res_chronos = {"status": "FAILED", "directional_bias": "NEUTRAL", "confidence_score": 50.0, "spot_price": 0.0, "metrics": {"forecast_delta_pct": 0.0, "opacity_penalty": True}}
-
-            # Collect Analytical Worker Results
-            analytical_futures = [
-                future_stat, future_mom, future_sentry, future_money, future_timeframe,
-                future_fund, future_sec, future_sector, future_macro, future_sent, future_risk
+            all_futures = [
+                future_tfm, future_chr, future_stat, future_mom, future_sentry,
+                future_money, future_timeframe, future_fund, future_sec, future_sector,
+                future_macro, future_sent, future_risk
             ]
 
             payload_map: Dict[str, AgentExecutionPayload] = {}
-            for fut in as_completed(analytical_futures, timeout=cls.NODE_TIMEOUT_SECONDS + 2.0):
+            for fut in as_completed(all_futures, timeout=cls.NODE_TIMEOUT_SECONDS + 1.0):
                 try:
                     k, payload = fut.result()
                     payload_map[k] = payload
                 except Exception as err:
                     logger.warning(f"Future collection error: {err}")
 
-        # Fallback mappings if any specific future failed collection
+        # Ingested Payloads
+        p_tfm = payload_map.get("06a_timesfm") or TimesFMForecastingAgent.forecast(clean_ticker)
+        p_chr = payload_map.get("06b_chronos") or ChronosForecastingAgent.forecast(clean_ticker)
         p_stat = payload_map.get("07_stat_invariance") or StatisticalInvarianceAgent.analyze(clean_ticker)
         p_mom = payload_map.get("08_momentum") or MomentumVectorAgent.analyze(clean_ticker)
         p_sentry = payload_map.get("09_visual_sentry") or VisualSentryAgent.analyze(clean_ticker)
@@ -200,18 +158,18 @@ class SupervisorOrchestrator:
         p_sent = payload_map.get("16_sentiment") or SentimentHarvesterAgent.harvest(clean_ticker)
         p_risk = payload_map.get("02_risk") or PortfolioGuardAgent.calculate_stops(clean_ticker)
 
-        spot = res_timesfm.get("spot_price") or res_chronos.get("spot_price") or p_sentry.spot_price
+        spot = p_tfm.spot_price or p_chr.spot_price or p_sentry.spot_price
 
         # 2. Predictive Dual-Model Divergence Resolution
-        t_ok = res_timesfm.get("status") == "SUCCESS" and not res_timesfm.get("metrics", {}).get("opacity_penalty")
-        c_ok = res_chronos.get("status") == "SUCCESS" and not res_chronos.get("metrics", {}).get("opacity_penalty")
+        t_ok = p_tfm.status == ExecutionStatus.SUCCESS and not p_tfm.metrics.get("opacity_penalty")
+        c_ok = p_chr.status == ExecutionStatus.SUCCESS and not p_chr.metrics.get("opacity_penalty")
 
-        t_delta = res_timesfm.get("metrics", {}).get("forecast_delta_pct", 0.0) if t_ok else 0.0
-        c_delta = res_chronos.get("metrics", {}).get("forecast_delta_pct", 0.0) if c_ok else 0.0
+        t_delta = p_tfm.metrics.get("forecast_delta_pct", 0.0) if t_ok else 0.0
+        c_delta = p_chr.metrics.get("forecast_delta_pct", 0.0) if c_ok else 0.0
         pred_spread = round(t_delta - c_delta, 2) if (t_ok and c_ok) else (t_delta if t_ok else c_delta)
         
-        t_bias = res_timesfm.get("directional_bias", "NEUTRAL")
-        c_bias = res_chronos.get("directional_bias", "NEUTRAL")
+        t_bias = p_tfm.directional_bias
+        c_bias = p_chr.directional_bias
 
         if t_ok and c_ok:
             is_pred_conflict = (t_bias != c_bias) or (abs(pred_spread) > 1.5)
@@ -225,31 +183,30 @@ class SupervisorOrchestrator:
         vote_table: Dict[str, Dict[str, Any]] = {}
 
         # Ingest Predictive Payloads
-        for key, res, is_valid in [("06a_timesfm", res_timesfm, t_ok), ("06b_chronos", res_chronos, c_ok)]:
+        for key, p, is_valid in [("06a_timesfm", p_tfm, t_ok), ("06b_chronos", p_chr, c_ok)]:
             if not is_valid:
                 vote_table[key] = {
                     "bias": "NEUTRAL",
                     "confidence": 50.0,
                     "effective_weight": 0.0,
-                    "metrics": res.get("metrics", {"opacity_penalty": True})
+                    "metrics": p.metrics if p else {"opacity_penalty": True}
                 }
                 continue
 
-            base_conf = float(res.get("confidence_score", 80.0))
+            base_conf = float(p.confidence_score)
             raw_conf = max(10.0, min(100.0, float(dynamic_weights.get(key, base_conf))))
             discount = 0.80 if is_pred_conflict else 1.0
             eff_wt = raw_conf * discount
             total_weight += eff_wt
-            bias_val = res.get("directional_bias", "NEUTRAL")
-            if bias_val == "BULLISH":
+            if p.directional_bias == DirectionalBias.BULLISH:
                 bull_weight += eff_wt
-            elif bias_val == "BEARISH":
+            elif p.directional_bias == DirectionalBias.BEARISH:
                 bear_weight += eff_wt
             vote_table[key] = {
-                "bias": bias_val,
+                "bias": p.directional_bias.value,
                 "confidence": raw_conf,
                 "effective_weight": round(eff_wt, 2),
-                "metrics": res.get("metrics", {})
+                "metrics": p.metrics
             }
 
         # Ingest Standard Analytical Nodes
@@ -301,7 +258,7 @@ class SupervisorOrchestrator:
 
         invalidation_floor = p_risk.metrics.get("proposed_stop") or p_risk.metrics.get("invalidation_floor") or p_sentry.metrics.get("nearest_support", 0.0)
 
-        # 4. Record live forecast batch to SQLite DAG for future settlement
+        # 4. Record live forecast batch to SQLite DAG
         record_forecast_batch(clean_ticker, spot, vote_table, horizon_bars=16)
 
         return SupervisorSynthesisResult(
